@@ -1,0 +1,54 @@
+{
+    "amp.notifications.enabled": true,
+    "amp.notifications.system.enabled": true,
+    "amp.git.commit.coauthor.enabled": false,
+    "amp.git.commit.ampThread.enabled": false,
+    "amp.showCosts": false,
+    "amp.updates.mode": "warn",
+    "amp.terminal.animation": true,
+    "amp.dangerouslyAllowAll": false,
+    "amp.permissions": [
+        {
+            "tool": "Bash",
+            "action": "ask",
+            "matches": {
+                "cmd": [
+                    "rm -rf *",
+                    "rm -r *",
+                    "rm -fr *",
+                    "rmdir *",
+                    "git push*",
+                    "git push --force*",
+                    "git push -f*",
+                    "git reset --hard*",
+                    "git checkout -- *",
+                    "git clean -f*",
+                    "git clean -fd*",
+                    "git branch -D*",
+                    "git rebase*",
+                    "git stash drop*",
+                    "git stash clear*",
+                    "sudo *",
+                    "chmod -R *",
+                    "chown -R *",
+                    "mv /* *",
+                    "cp -rf /* *",
+                    ":> *",
+                    "truncate *",
+                    "dd *",
+                    "mkfs*",
+                    "kill -9*",
+                    "killall*",
+                    "pkill*"
+                ]
+            }
+        },
+        {
+            "tool": "Bash",
+            "action": "allow",
+            "matches": {
+                "cmd": ["*"]
+            }
+        }
+    ]
+}
