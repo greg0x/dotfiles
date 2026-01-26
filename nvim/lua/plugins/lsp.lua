@@ -10,7 +10,12 @@ return {
       -- Mason setup
       require("mason").setup()
       require("mason-lspconfig").setup({
-        ensure_installed = { "rust_analyzer", "gopls" },
+        ensure_installed = {
+          "rust_analyzer",
+          "gopls",
+          "ts_ls",
+          "kotlin_language_server",
+        },
         automatic_installation = true,
       })
 
@@ -31,7 +36,6 @@ return {
           map("K", vim.lsp.buf.hover, "Hover")
           map("<leader>ca", vim.lsp.buf.code_action, "Code action")
           map("<leader>cr", vim.lsp.buf.rename, "Rename")
-          map("<leader>cf", function() vim.lsp.buf.format({ async = true }) end, "Format")
           map("<leader>cd", vim.diagnostic.open_float, "Line diagnostics")
           map("]d", vim.diagnostic.goto_next, "Next diagnostic")
           map("[d", vim.diagnostic.goto_prev, "Prev diagnostic")
@@ -60,13 +64,74 @@ return {
           },
         },
       })
+
+      -- TypeScript/JavaScript
+      lspconfig.ts_ls.setup({
+        capabilities = capabilities,
+        settings = {
+          typescript = {
+            inlayHints = {
+              includeInlayParameterNameHints = "all",
+              includeInlayFunctionParameterTypeHints = true,
+              includeInlayVariableTypeHints = true,
+            },
+          },
+        },
+      })
+
+      -- Kotlin
+      lspconfig.kotlin_language_server.setup({
+        capabilities = capabilities,
+      })
+
+      -- Swift (sourcekit-lsp comes with Xcode, no mason install needed)
+      lspconfig.sourcekit.setup({
+        capabilities = capabilities,
+      })
     end,
   },
 
-  -- Mason for installing LSP servers
+  -- Mason for installing LSP servers and tools
   {
     "williamboman/mason.nvim",
     cmd = "Mason",
     opts = {},
+  },
+
+  -- Better Lua LSP for nvim config
+  {
+    "folke/lazydev.nvim",
+    ft = "lua",
+    opts = {
+      library = {
+        { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+      },
+    },
+  },
+
+  -- JSON/YAML schemas
+  {
+    "b0o/SchemaStore.nvim",
+    lazy = true,
+  },
+
+  -- Auto-install formatters and linters
+  {
+    "WhoIsSethDaniel/mason-tool-installer.nvim",
+    dependencies = { "williamboman/mason.nvim" },
+    opts = {
+      ensure_installed = {
+        -- Formatters
+        "stylua",      -- Lua
+        "gofumpt",     -- Go
+        "goimports",   -- Go
+        "biome",       -- JS/TS
+        "prettier",    -- Fallback for JS/TS/web
+        "ktlint",      -- Kotlin
+        -- Note: rustfmt comes with rustup, swiftformat via homebrew/system
+      },
+      auto_update = false,
+      run_on_start = true,
+    },
   },
 }
