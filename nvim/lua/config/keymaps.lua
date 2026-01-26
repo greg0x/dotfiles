@@ -48,3 +48,37 @@ map({ "n", "v" }, "<leader>y", [["+y]], { desc = "Yank to clipboard" })
 -- Quickfix navigation
 map("n", "]q", "<cmd>cnext<cr>zz", { desc = "Next quickfix" })
 map("n", "[q", "<cmd>cprev<cr>zz", { desc = "Prev quickfix" })
+
+-- Splits
+map("n", "<leader>-", "<cmd>split<cr>", { desc = "Split below" })
+map("n", "<leader>|", "<cmd>vsplit<cr>", { desc = "Split right" })
+map("n", "<leader>wd", "<C-w>c", { desc = "Delete window" })
+
+-- Move lines (extend to normal and insert modes)
+map("n", "<A-j>", "<cmd>m .+1<cr>==", { desc = "Move down" })
+map("n", "<A-k>", "<cmd>m .-2<cr>==", { desc = "Move up" })
+map("i", "<A-j>", "<Esc><cmd>m .+1<cr>==gi", { desc = "Move down" })
+map("i", "<A-k>", "<Esc><cmd>m .-2<cr>==gi", { desc = "Move up" })
+
+-- Save with Ctrl+s
+map({ "n", "i", "v", "s" }, "<C-s>", "<cmd>w<cr><Esc>", { desc = "Save file" })
+
+-- New file
+map("n", "<leader>fn", "<cmd>enew<cr>", { desc = "New file" })
+
+-- Diagnostic navigation
+map("n", "]e", function() vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR }) end, { desc = "Next error" })
+map("n", "[e", function() vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR }) end, { desc = "Prev error" })
+map("n", "]w", function() vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.WARN }) end, { desc = "Next warning" })
+map("n", "[w", function() vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.WARN }) end, { desc = "Prev warning" })
+
+-- Delete other buffers
+map("n", "<leader>bo", "<cmd>%bd|e#|bd#<cr>", { desc = "Delete other buffers" })
+
+-- Add comment below/above
+map("n", "gco", "o<Esc>Vcx<Esc><cmd>normal gcc<cr>fxa<bs>", { desc = "Add comment below" })
+map("n", "gcO", "O<Esc>Vcx<Esc><cmd>normal gcc<cr>fxa<bs>", { desc = "Add comment above" })
+
+-- Better indenting (stays selected)
+map("v", "<", "<gv", { desc = "Indent left" })
+map("v", ">", ">gv", { desc = "Indent right" })
