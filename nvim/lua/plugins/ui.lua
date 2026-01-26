@@ -51,9 +51,17 @@ return {
       wk.add({
         { "<leader>f", group = "find" },
         { "<leader>g", group = "git" },
+        { "<leader>gh", group = "hunks" },
+        { "<leader>gp", group = "pr" },
+        { "<leader>gi", group = "issues" },
         { "<leader>c", group = "code" },
         { "<leader>b", group = "buffer" },
         { "<leader>u", group = "ui" },
+        { "<leader>a", group = "ai" },
+        { "<leader>h", group = "harpoon" },
+        { "<leader>x", group = "diagnostics" },
+        { "<leader>s", group = "search" },
+        { "s", group = "surround" },
       })
     end,
   },
