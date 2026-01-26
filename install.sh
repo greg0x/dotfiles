@@ -44,6 +44,17 @@ fi
 ln -sf "$DOTFILES/amp/settings.json" ~/.config/amp/settings.json
 echo "✓ Amp config linked"
 
+# Symlink ghostty config
+mkdir -p ~/.config/ghostty
+if [ -L ~/.config/ghostty/config ]; then
+    rm ~/.config/ghostty/config
+elif [ -f ~/.config/ghostty/config ]; then
+    echo "Backing up existing ghostty config..."
+    mv ~/.config/ghostty/config ~/.config/ghostty/config.backup.$(date +%s)
+fi
+ln -sf "$DOTFILES/ghostty/config" ~/.config/ghostty/config
+echo "✓ Ghostty config linked"
+
 echo ""
 echo "Done! Next steps:"
 echo "  1. Open nvim - plugins will auto-install"

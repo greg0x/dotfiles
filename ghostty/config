@@ -1,0 +1,4 @@
+keybind = shift+enter=text:\n
+font-size = 12
+theme = TokyoNight Storm
+macos-option-as-alt = left
