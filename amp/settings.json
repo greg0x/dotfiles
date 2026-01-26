@@ -3,7 +3,7 @@
     "amp.notifications.system.enabled": true,
     "amp.git.commit.coauthor.enabled": false,
     "amp.git.commit.ampThread.enabled": false,
-    "amp.showCosts": false,
+    "amp.showCosts": true,
     "amp.updates.mode": "warn",
     "amp.terminal.animation": true,
     "amp.dangerouslyAllowAll": false,
