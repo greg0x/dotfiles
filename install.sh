@@ -55,6 +55,17 @@ fi
 ln -sf "$DOTFILES/ghostty/config" ~/.config/ghostty/config
 echo "✓ Ghostty config linked"
 
+# Symlink claude code config
+mkdir -p ~/.claude
+if [ -L ~/.claude/settings.json ]; then
+    rm ~/.claude/settings.json
+elif [ -f ~/.claude/settings.json ]; then
+    echo "Backing up existing claude settings..."
+    mv ~/.claude/settings.json ~/.claude/settings.json.backup.$(date +%s)
+fi
+ln -sf "$DOTFILES/claude/settings.json" ~/.claude/settings.json
+echo "✓ Claude Code config linked"
+
 echo ""
 echo "Done! Next steps:"
 echo "  1. Open nvim - plugins will auto-install"
