@@ -1,6 +1,7 @@
 {
     "amp.notifications.enabled": true,
     "amp.notifications.system.enabled": true,
+    "amp.notifications.bell.enabled": true,
     "amp.git.commit.coauthor.enabled": false,
     "amp.git.commit.ampThread.enabled": false,
     "amp.showCosts": true,
