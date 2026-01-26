@@ -12,6 +12,12 @@ return {
         changedelete = { text = "▎" },
         untracked = { text = "▎" },
       },
+      current_line_blame = true,
+      current_line_blame_opts = {
+        delay = 300,
+        virt_text_pos = "eol",
+      },
+      current_line_blame_formatter = "<author>, <author_time:%R> • <summary>",
       on_attach = function(buffer)
         local gs = package.loaded.gitsigns
         local map = function(mode, l, r, desc)
@@ -27,8 +33,21 @@ return {
         map("n", "<leader>ghR", gs.reset_buffer, "Reset buffer")
         map("n", "<leader>ghp", gs.preview_hunk, "Preview hunk")
         map("n", "<leader>ghd", gs.diffthis, "Diff this")
+        map("n", "<leader>ghb", gs.blame_line, "Blame line (full)")
+        map("n", "<leader>ghB", function() gs.blame_line({ full = true }) end, "Blame line (popup)")
       end,
     },
+  },
+
+  -- Open commits/PRs in browser
+  {
+    "ruifm/gitlinker.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    keys = {
+      { "<leader>gy", function() require("gitlinker").get_buf_range_url("n") end, desc = "Copy GitHub URL" },
+      { "<leader>gY", function() require("gitlinker").get_buf_range_url("n", { action_callback = require("gitlinker.actions").open_in_browser }) end, desc = "Open in GitHub" },
+    },
+    opts = {},
   },
 
   -- Octo for GitHub PRs
