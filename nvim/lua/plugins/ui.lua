@@ -7,6 +7,16 @@ return {
     opts = {
       style = "storm",
       transparent = false,
+      on_highlights = function(hl, c)
+        -- Brighten comments for better visibility
+        hl.Comment = { fg = "#7a88a8", italic = true }
+        -- Brighten line numbers
+        hl.LineNr = { fg = "#6a7394" }
+        hl.LineNrAbove = { fg = "#6a7394" }
+        hl.LineNrBelow = { fg = "#6a7394" }
+        -- Keep current line number bright
+        hl.CursorLineNr = { fg = "#c0caf5", bold = true }
+      end,
     },
     config = function(_, opts)
       require("tokyonight").setup(opts)
