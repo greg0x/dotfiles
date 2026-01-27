@@ -50,3 +50,13 @@ autocmd("BufWritePre", {
     vim.fn.mkdir(vim.fn.fnamemodify(file, ":p:h"), "p")
   end,
 })
+
+-- Wrap lines in markdown files
+autocmd("FileType", {
+  group = augroup("markdown_wrap", { clear = true }),
+  pattern = { "markdown" },
+  callback = function()
+    vim.opt_local.wrap = true
+    vim.opt_local.linebreak = true
+  end,
+})
