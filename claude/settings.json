@@ -54,5 +54,8 @@
     "Read(.env)",
     "Read(.env.*)",
     "Read(**/secrets/**)"
-  ]
+  ],
+  "enabledPlugins": {
+    "lua-lsp@claude-plugins-official": true
+  }
 }
