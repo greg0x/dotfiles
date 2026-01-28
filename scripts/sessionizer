@@ -7,7 +7,7 @@ CACHE="$HOME/.cache/sessionizer-repos"
 refresh_cache() {
     {
         fd -H --no-ignore-vcs '^\.git$' ~/dev --max-depth 5 | sed -E 's|/\.git/?$||'
-        echo "$HOME/.notes"
+        echo "$HOME/notes"
         echo "$HOME/dotfiles"
     } | sort -u > "$CACHE.tmp" && mv "$CACHE.tmp" "$CACHE"
 }
@@ -19,7 +19,7 @@ if [[ -f "$CACHE" ]]; then
 else
     selected=$({
         fd -H --no-ignore-vcs '^\.git$' ~/dev --max-depth 5 | sed -E 's|/\.git/?$||'
-        echo "$HOME/.notes"
+        echo "$HOME/notes"
         echo "$HOME/dotfiles"
     } | sort -u | fzf --reverse)
 fi
