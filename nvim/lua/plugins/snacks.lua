@@ -32,7 +32,8 @@ return {
     -- Utilities
     { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss notifications" },
     { "<leader>bd", function() Snacks.bufdelete() end, desc = "Delete buffer" },
-    { "<leader>z", function() Snacks.zen() end, desc = "Zen mode" },
+    { "<leader>z", function() Snacks.zen.zoom() end, desc = "Zoom window" },
+    { "<leader>Z", function() Snacks.zen() end, desc = "Zen mode" },
   },
   opts = {
     bigfile = { enabled = true },
