@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+# Apply session color - called by tmux hook on session switch
+# Reads from persisted config file
+
+CONFIG="$HOME/dotfiles/tmux/session-colors"
+
+current=$(tmux display-message -p '#S')
+dark="#1a1b26"
+
+# Try session option first, fall back to config file
+color=$(tmux show-option -t "$current" -qv @session_color)
+
+if [[ -z $color ]] && [[ -f "$CONFIG" ]]; then
+    color=$(grep "^${current}:" "$CONFIG" | cut -d: -f2)
+    # Store in session option for future switches
+    if [[ -n $color ]]; then
+        tmux set-option -t "$current" @session_color "$color"
+    fi
+fi
+
+if [[ -n $color ]]; then
+    tmux set-option -g status-bg "$color"
+    tmux set-option -g status-fg "$dark"
+    tmux set-option -g status-left "#[bg=$color,fg=$dark,bold] #S "
+    tmux set-option -g status-right "#[bg=$color,fg=$dark] %a %d %b %H:%M "
+    tmux set-option -g window-status-current-format "#[bg=$color,fg=$dark,bold] #I:#{?window_zoomed_flag,󰊓 ,}[#{P:#{?pane_active,*,}#{pane_current_command} }] "
+    tmux set-option -g window-status-format "#[bg=$color,fg=$dark] #I:[#{P:#{pane_current_command} }] "
+else
+    tmux set-option -g status-bg '#24283b'
+    tmux set-option -g status-fg '#c0caf5'
+    tmux set-option -g status-left '#[fg=#7aa2f7,bold] #S '
+    tmux set-option -g status-right '#[fg=#565f89] %a %d %b %H:%M '
+    tmux set-option -g window-status-current-format '#[fg=#7aa2f7,bold] #I:#{?window_zoomed_flag,󰊓 ,}[#{P:#{?pane_active,*,}#{pane_current_command} }] '
+    tmux set-option -g window-status-format '#[fg=#565f89]#{?window_activity_flag,#[fg=#e0af68],} #I:[#{P:#{pane_current_command} }] '
+fi

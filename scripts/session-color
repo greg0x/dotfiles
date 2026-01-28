@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+
+# Set session color - changes status bar background
+# Persists to dotfiles config
+
+CONFIG="$HOME/dotfiles/tmux/session-colors"
+
+colors=(
+    "blue:#7aa2f7"
+    "purple:#bb9af7"
+    "cyan:#7dcfff"
+    "teal:#73daca"
+    "green:#9ece6a"
+    "lime:#c3e88d"
+    "yellow:#e0af68"
+    "orange:#ff9e64"
+    "red:#f7768e"
+    "pink:#ff007c"
+    "magenta:#c678dd"
+    "lavender:#b4befe"
+    "sky:#89dceb"
+    "peach:#fab387"
+    "maroon:#eba0ac"
+    "flamingo:#f2cdcd"
+    "rose:#ebbcba"
+    "gold:#f9e2af"
+    "none:reset"
+)
+
+current=$(tmux display-message -p '#S')
+selected=$(printf '%s\n' "${colors[@]}" | cut -d: -f1 | fzf --reverse --header="Color for '$current'")
+
+[[ -z $selected ]] && exit 0
+
+dark="#1a1b26"
+
+# Save to config file
+save_color() {
+    local session="$1"
+    local color="$2"
+
+    # Remove existing entry for this session
+    if [[ -f "$CONFIG" ]]; then
+        grep -v "^${session}:" "$CONFIG" > "$CONFIG.tmp" && mv "$CONFIG.tmp" "$CONFIG"
+    fi
+
+    # Add new entry (if not "none")
+    if [[ -n $color ]]; then
+        echo "${session}:${color}" >> "$CONFIG"
+    fi
+}
+
+if [[ $selected == "none" ]]; then
+    tmux set-option -t "$current" @session_color ""
+    save_color "$current" ""
+    # Reset to default TokyoNight
+    tmux set-option -g status-bg '#24283b'
+    tmux set-option -g status-fg '#c0caf5'
+    tmux set-option -g status-left '#[fg=#7aa2f7,bold] #S '
+    tmux set-option -g status-right '#[fg=#565f89] %a %d %b %H:%M '
+    tmux set-option -g window-status-current-format '#[fg=#7aa2f7,bold] #I:#{?window_zoomed_flag,󰊓 ,}[#{P:#{?pane_active,*,}#{pane_current_command} }] '
+    tmux set-option -g window-status-format '#[fg=#565f89]#{?window_activity_flag,#[fg=#e0af68],} #I:[#{P:#{pane_current_command} }] '
+else
+    for c in "${colors[@]}"; do
+        name="${c%%:*}"
+        code="${c##*:}"
+        if [[ $name == "$selected" ]]; then
+            tmux set-option -t "$current" @session_color "$code"
+            save_color "$current" "$code"
+            # Color the whole bar
+            tmux set-option -g status-bg "$code"
+            tmux set-option -g status-fg "$dark"
+            # Dark text for readability
+            tmux set-option -g status-left "#[bg=$code,fg=$dark,bold] #S "
+            tmux set-option -g status-right "#[bg=$code,fg=$dark] %a %d %b %H:%M "
+            tmux set-option -g window-status-current-format "#[bg=$code,fg=$dark,bold] #I:#{?window_zoomed_flag,󰊓 ,}[#{P:#{?pane_active,*,}#{pane_current_command} }] "
+            tmux set-option -g window-status-format "#[bg=$code,fg=$dark] #I:[#{P:#{pane_current_command} }] "
+            break
+        fi
+    done
+fi

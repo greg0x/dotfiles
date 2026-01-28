@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+CONFIG="$HOME/dotfiles/tmux/session-colors"
+
 # Find git repos and worktrees, select with fzf
 selected=$(fd -H --no-ignore '^\.git$' ~/dev --max-depth 5 -x dirname {} | sort -u | fzf --reverse)
 
@@ -7,6 +9,27 @@ selected=$(fd -H --no-ignore '^\.git$' ~/dev --max-depth 5 -x dirname {} | sort 
 
 # Session name from folder name, replace dots/spaces with underscores
 session_name=$(basename "$selected" | tr './ ' '___')
+
+# Apply saved color for session
+apply_session_color() {
+    local session="$1"
+    local color
+    local dark="#1a1b26"
+
+    if [[ -f "$CONFIG" ]]; then
+        color=$(grep "^${session}:" "$CONFIG" | cut -d: -f2)
+    fi
+
+    if [[ -n $color ]]; then
+        tmux set-option -t "$session" @session_color "$color"
+        tmux set-option -g status-bg "$color"
+        tmux set-option -g status-fg "$dark"
+        tmux set-option -g status-left "#[bg=$color,fg=$dark,bold] #S "
+        tmux set-option -g status-right "#[bg=$color,fg=$dark] %a %d %b %H:%M "
+        tmux set-option -g window-status-current-format "#[bg=$color,fg=$dark,bold] #I:#{?window_zoomed_flag,󰊓 ,}[#{P:#{?pane_active,*,}#{pane_current_command} }] "
+        tmux set-option -g window-status-format "#[bg=$color,fg=$dark] #I:[#{P:#{pane_current_command} }] "
+    fi
+}
 
 # Function to create session with layout
 create_session() {
@@ -32,6 +55,7 @@ create_session() {
 if [[ -z $TMUX ]]; then
     if ! tmux has-session -t="$session_name" 2>/dev/null; then
         create_session
+        apply_session_color "$session_name"
     fi
     tmux attach -t "$session_name"
     exit 0
@@ -40,6 +64,7 @@ fi
 # In tmux - create if needed, then switch
 if ! tmux has-session -t="$session_name" 2>/dev/null; then
     create_session
+    apply_session_color "$session_name"
 fi
 
 tmux switch-client -t "$session_name"
