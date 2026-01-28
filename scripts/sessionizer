@@ -2,8 +2,12 @@
 
 CONFIG="$HOME/dotfiles/tmux/session-colors"
 
-# Find git repos and worktrees, select with fzf
-selected=$(fd -H --no-ignore '^\.git$' ~/dev --max-depth 5 -x dirname {} | sort -u | fzf --reverse)
+# Find git repos and worktrees, plus special folders, select with fzf
+selected=$({
+    fd -H --no-ignore '^\.git$' ~/dev --max-depth 5 -x dirname {}
+    echo "$HOME/.notes"
+    echo "$HOME/dotfiles"
+} | sort -u | fzf --reverse)
 
 [[ -z $selected ]] && exit 0
 
