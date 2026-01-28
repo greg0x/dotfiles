@@ -60,3 +60,11 @@ autocmd("FileType", {
     vim.opt_local.linebreak = true
   end,
 })
+
+-- Autosave on focus lost
+autocmd("FocusLost", {
+  group = augroup("autosave", { clear = true }),
+  callback = function()
+    vim.cmd("silent! wall")
+  end,
+})
