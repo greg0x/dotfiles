@@ -28,6 +28,7 @@ opt.sidescrolloff = 8
 
 -- Behavior
 opt.hidden = true
+opt.autowriteall = true
 opt.mouse = "a"
 opt.splitright = true
 opt.splitbelow = true

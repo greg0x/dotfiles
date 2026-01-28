@@ -61,10 +61,25 @@ autocmd("FileType", {
   end,
 })
 
--- Autosave on focus lost
-autocmd("FocusLost", {
+-- Autosave on focus lost or buffer leave
+autocmd({ "FocusLost", "BufLeave" }, {
   group = augroup("autosave", { clear = true }),
-  callback = function()
-    vim.cmd("silent! wall")
+  pattern = "*",
+  callback = function(event)
+    local buf = event.buf
+    if vim.api.nvim_buf_is_valid(buf)
+      and vim.bo[buf].modified
+      and vim.bo[buf].buftype == ""
+      and vim.api.nvim_buf_get_name(buf) ~= ""
+    then
+      vim.api.nvim_buf_call(buf, function()
+        -- Format then save
+        local ok, conform = pcall(require, "conform")
+        if ok then
+          conform.format({ bufnr = buf, timeout_ms = 500, lsp_fallback = true })
+        end
+        vim.cmd("update")
+      end)
+    end
   end,
 })
