@@ -1,4 +1,5 @@
 {
+  "ideAutoConnect": true,
   "enabledPlugins": {
     "lua-lsp@claude-plugins-official": true,
     "rust-analyzer-lsp@claude-plugins-official": true,
