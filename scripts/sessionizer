@@ -1,13 +1,28 @@
 #!/usr/bin/env bash
 
 CONFIG="$HOME/dotfiles/tmux/session-colors"
+CACHE="$HOME/.cache/sessionizer-repos"
 
-# Find git repos and worktrees, plus special folders, select with fzf
-selected=$({
-    fd -H --no-ignore '^\.git$' ~/dev --max-depth 5 -x dirname {}
-    echo "$HOME/.notes"
-    echo "$HOME/dotfiles"
-} | sort -u | fzf --reverse)
+# Refresh cache in background (runs every time, but non-blocking)
+refresh_cache() {
+    {
+        fd -H --no-ignore-vcs '^\.git$' ~/dev --max-depth 5 | sed -E 's|/\.git/?$||'
+        echo "$HOME/.notes"
+        echo "$HOME/dotfiles"
+    } | sort -u > "$CACHE.tmp" && mv "$CACHE.tmp" "$CACHE"
+}
+refresh_cache &
+
+# Use cache if exists, otherwise generate now
+if [[ -f "$CACHE" ]]; then
+    selected=$(fzf --reverse < "$CACHE")
+else
+    selected=$({
+        fd -H --no-ignore-vcs '^\.git$' ~/dev --max-depth 5 | sed -E 's|/\.git/?$||'
+        echo "$HOME/.notes"
+        echo "$HOME/dotfiles"
+    } | sort -u | fzf --reverse)
+fi
 
 [[ -z $selected ]] && exit 0
 
