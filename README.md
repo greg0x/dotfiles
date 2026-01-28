@@ -1,12 +1,11 @@
 # Dotfiles
 
-Minimal neovim + tmux + amp setup for AI-assisted Rust/Go development.
+Neovim + tmux + AI tooling for Rust/Go/TypeScript development.
 
 ## Quick Install
 
 ```bash
 cd ~/dotfiles
-chmod +x install.sh
 ./install.sh
 ```
 
@@ -23,16 +22,28 @@ dotfiles/
 │       │   └── autocmds.lua
 │       └── plugins/
 │           ├── snacks.lua      # picker, lazygit, explorer, terminal
-│           ├── lsp.lua         # rust-analyzer, gopls
+│           ├── lsp.lua         # rust-analyzer, gopls, ts_ls
 │           ├── completion.lua  # blink.cmp
 │           ├── treesitter.lua
+│           ├── editor.lua      # harpoon, flash, mini.*, trouble
+│           ├── formatting.lua  # conform.nvim
 │           ├── ui.lua          # tokyonight, lualine, which-key
-│           ├── git.lua         # gitsigns, octo
+│           ├── git.lua         # gitsigns, gitlinker, octo
 │           ├── tmux.lua        # vim-tmux-navigator
-│           └── ai.lua          # amp.nvim
+│           └── ai.lua          # amp.nvim, claudecode.nvim
 ├── tmux/
-│   └── tmux.conf
+│   ├── tmux.conf
+│   └── session-colors         # persisted session color mappings
+├── scripts/
+│   ├── sessionizer            # fzf project switcher with auto-layout
+│   ├── session-color          # pick session status bar color
+│   └── session-color-apply    # hook to apply colors on switch
+├── ghostty/
+│   └── config
+├── claude/
+│   └── settings.json
 ├── amp/
+│   ├── settings.json
 │   └── AGENTS.md
 ├── install.sh
 └── README.md
@@ -40,7 +51,7 @@ dotfiles/
 
 ## Key Bindings
 
-### Leader = Space
+### Neovim (leader = Space)
 
 | Key | Action |
 |-----|--------|
@@ -50,28 +61,44 @@ dotfiles/
 | `<leader><space>` | Smart picker |
 | `<leader>e` | File explorer |
 | `<leader>gg` | Lazygit |
-| `<leader>aa` | Open Amp |
 | `gd` | Go to definition |
 | `gr` | References |
 | `K` | Hover docs |
 | `<leader>ca` | Code action |
 | `<leader>cr` | Rename |
+| `<leader>1-4` | Harpoon files |
+| `s` | Flash jump |
 
 ### Tmux (prefix = C-a)
 
 | Key | Action |
 |-----|--------|
-| `C-a |` | Split vertical |
+| `C-a \|` | Split vertical |
 | `C-a -` | Split horizontal |
+| `C-a f` | Sessionizer (project picker) |
 | `C-a g` | Lazygit popup |
+| `C-a C` | Session color picker |
 | `C-h/j/k/l` | Navigate panes (works in nvim too) |
 | `M-1..5` | Switch windows |
+| `M-h/l` | Prev/next window |
 
 ## Dependencies
 
 - neovim >= 0.10
-- git, ripgrep, fd
-- go, rust (rustup)
+- tmux
+- ghostty
+- git, ripgrep, fd, fzf
 - lazygit
-- Nerd Font (recommended: JetBrainsMono)
+- go, rust (rustup)
+- Nerd Font (JetBrainsMono recommended)
+
+### AI Tools
+- claude CLI (`cc`)
 - amp CLI
+
+## Todo
+
+- [ ] Shell config (zshrc/bashrc) - fzf integration, PATH, aliases
+- [ ] App installations in install.sh (brew bundle or similar)
+- [ ] Aerospace + Karabiner configs
+- [ ] Git config (.gitconfig)
