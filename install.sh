@@ -66,6 +66,11 @@ fi
 ln -sf "$DOTFILES/claude/settings.json" ~/.claude/settings.json
 echo "✓ Claude Code config linked"
 
+# Symlink scripts
+mkdir -p ~/dev/bin
+ln -sf "$DOTFILES/scripts/sessionizer" ~/dev/bin/sessionizer
+echo "✓ Scripts linked"
+
 echo ""
 echo "Done! Next steps:"
 echo "  1. Open nvim - plugins will auto-install"
