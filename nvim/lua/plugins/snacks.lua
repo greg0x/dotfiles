@@ -38,7 +38,10 @@ return {
   opts = {
     bigfile = { enabled = true },
     dashboard = { enabled = false }, -- keep minimal
-    explorer = { enabled = true },
+    explorer = {
+      enabled = true,
+      replace_netrw = false,
+    },
     indent = { enabled = false }, -- you said cut indent guides
     input = { enabled = true },
     lazygit = { enabled = true },
