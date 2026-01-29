@@ -63,11 +63,18 @@ return {
       { "<leader>gpl", "<cmd>Octo pr list<cr>", desc = "List PRs" },
       { "<leader>gpc", "<cmd>Octo pr create<cr>", desc = "Create PR" },
       { "<leader>gil", "<cmd>Octo issue list<cr>", desc = "List issues" },
+      { "<leader>gim", "<cmd>Octo issue list mentioned=greg0x<cr>", desc = "Issues mentioning me" },
     },
     opts = {
       enable_builtin = true,
       default_to_projects_v2 = true,
       picker = "snacks",
+      issues = {
+        order_by = {
+          field = "UPDATED_AT",
+          direction = "DESC",
+        },
+      },
     },
   },
 }
