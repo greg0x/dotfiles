@@ -44,6 +44,7 @@ map("x", "<leader>p", [["_dP]], { desc = "Paste without yank" })
 
 -- Yank to system clipboard
 map({ "n", "v" }, "<leader>y", [["+y]], { desc = "Yank to clipboard" })
+map("n", "<leader>Y", [[:%y+<cr>]], { desc = "Yank buffer to clipboard" })
 
 -- Quickfix navigation
 map("n", "]q", "<cmd>cnext<cr>zz", { desc = "Next quickfix" })
