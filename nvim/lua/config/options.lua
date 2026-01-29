@@ -42,6 +42,10 @@ opt.completeopt = "menu,menuone,noselect"
 opt.swapfile = false
 opt.backup = false
 
+-- Spell checking (treesitter scopes this to comments/strings)
+opt.spell = true
+opt.spelllang = "en_us"
+
 -- Better display
 opt.list = true
 opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
