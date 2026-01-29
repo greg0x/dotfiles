@@ -82,4 +82,13 @@ return {
     event = { "BufReadPre", "BufNewFile" },
     opts = {},
   },
+
+  -- Show function/class context at top of buffer
+  {
+    "nvim-treesitter/nvim-treesitter-context",
+    event = { "BufReadPre", "BufNewFile" },
+    opts = {
+      max_lines = 3,
+    },
+  },
 }
