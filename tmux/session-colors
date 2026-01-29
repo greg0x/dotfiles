@@ -1,6 +1,6 @@
-# Session colors - format: session_name:color_code
-# Example: dotfiles:#7aa2f7
-pir:#bb9af7
-notes:#c3e88d
-dotfiles:#89dceb
-portal:#f9e2af
+# Session config - format: session_name:color:sound:emoji
+# Available sounds: Basso, Blow, Bottle, Frog, Funk, Glass, Hero, Morse, Ping, Pop, Purr, Sosumi, Submarine, Tink
+pir:#bb9af7:Hero:🚀
+notes:#c3e88d:Ping:📝
+dotfiles:#89dceb:Glass:⚙️
+portal:#f9e2af:Submarine:🌀

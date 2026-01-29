@@ -3,7 +3,8 @@
     "allow": [
       "Bash(git add:*)",
       "Bash(git commit -m \"$\\(cat <<''EOF''\nRecord iOS device benchmark results for direct-write optimization\n\niPhone 13 Pro results:\n- RLWE to LWE: 307.36ms → 301.90ms \\(-1.8%\\)\n- Total P50: 306.35ms → 297.82ms \\(-2.8%\\)\n\nDirect-write optimization shows minimal impact on iOS compared to\nM4 Mac \\(2% vs 5-8%\\). Allocation overhead is not the main bottleneck.\nNext steps: cache-friendly loop reordering, SIMD, or parallelization.\nEOF\n\\)\")",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(terminal-notifier:*)"
     ]
   }
 }
