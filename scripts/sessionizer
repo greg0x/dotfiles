@@ -1,30 +1,23 @@
 #!/usr/bin/env bash
 
 CONFIG="$HOME/dotfiles/tmux/session-colors"
-CACHE="$HOME/.cache/sessionizer-repos"
+HISTORY="$HOME/.cache/sessionizer-history"
 
-# Refresh cache in background (runs every time, but non-blocking)
-refresh_cache() {
-    {
-        fd -H --no-ignore-vcs '^\.git$' ~/dev --max-depth 5 | sed -E 's|/\.git/?$||'
-        echo "$HOME/notes"
-        echo "$HOME/dotfiles"
-    } | sort -u > "$CACHE.tmp" && mv "$CACHE.tmp" "$CACHE"
-}
-refresh_cache &
-
-# Use cache if exists, otherwise generate now
-if [[ -f "$CACHE" ]]; then
-    selected=$(fzf --reverse < "$CACHE")
-else
-    selected=$({
-        fd -H --no-ignore-vcs '^\.git$' ~/dev --max-depth 5 | sed -E 's|/\.git/?$||'
-        echo "$HOME/notes"
-        echo "$HOME/dotfiles"
-    } | sort -u | fzf --reverse)
-fi
+# Build list: recent selections first, then all directories
+selected=$({
+    [[ -f "$HISTORY" ]] && cat "$HISTORY"
+    fd -H --type d --max-depth 4 . ~/dev
+    echo "$HOME/notes"
+    echo "$HOME/dotfiles"
+} | awk '!seen[$0]++' | fzf --reverse)
 
 [[ -z $selected ]] && exit 0
+
+# Update history: add selection to top, keep last 20
+{
+    echo "$selected"
+    [[ -f "$HISTORY" ]] && grep -v "^${selected}$" "$HISTORY" | head -19
+} > "$HISTORY.tmp" && mv "$HISTORY.tmp" "$HISTORY"
 
 # Session name from folder name, replace dots/spaces with underscores
 session_name=$(basename "$selected" | tr './ ' '___')
