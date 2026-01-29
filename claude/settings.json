@@ -8,10 +8,15 @@
   },
   "allow": [
     "Bash(*)",
-    "Read(*)",
-    "Edit(*)",
-    "Write(*)",
-    "Search(*)",
+    "Read(~/dev/**)",
+    "Read(~/notes/**)",
+    "Read(~/dotfiles/**)",
+    "Edit(~/dev/**)",
+    "Edit(~/notes/**)",
+    "Edit(~/dotfiles/**)",
+    "Write(~/dev/**)",
+    "Write(~/notes/**)",
+    "Write(~/dotfiles/**)",
     "WebFetch(*)"
   ],
   "ask": [
