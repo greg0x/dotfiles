@@ -19,6 +19,7 @@ return {
     { "<leader>gg", function() Snacks.lazygit() end, desc = "Lazygit" },
     { "<leader>gf", function() Snacks.picker.git_files() end, desc = "Git files" },
     { "<leader>gc", function() Snacks.picker.git_log() end, desc = "Git commits" },
+    { "<leader>gC", function() Snacks.picker.git_log({ current_file = true }) end, desc = "Git commits (file)" },
     { "<leader>gs", function() Snacks.picker.git_status() end, desc = "Git status" },
     { "<leader>gb", function() Snacks.git.blame_line() end, desc = "Git blame line" },
     { "<leader>gB", function() Snacks.gitbrowse() end, desc = "Browse in GitHub" },
