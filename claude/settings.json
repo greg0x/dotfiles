@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "session=$(tmux display-message -p '#S' 2>/dev/null); config=$(grep \"^$session:\" ~/dotfiles/tmux/session-colors 2>/dev/null); if [ -n \"$config\" ]; then sound=$(echo \"$config\" | cut -d: -f3); emoji=$(echo \"$config\" | cut -d: -f4); else sound=Glass; emoji=; fi; terminal-notifier -title \"$emoji Claude Code ($session)\" -message \"Task complete\" -sound \"$sound\""
+            "command": "session=$(tmux display-message -p '#S' 2>/dev/null); config=$(grep \"^$session:\" ~/dotfiles/tmux/session-colors 2>/dev/null); if [ -n \"$config\" ]; then sound=$(echo \"$config\" | cut -d: -f3); emoji=$(echo \"$config\" | cut -d: -f4); else sound=Glass; emoji=; fi; terminal-notifier -title \"$emoji $session (cc)\" -message \"Task complete\" -sound \"$sound\" -activate com.mitchellh.ghostty -execute \"/opt/homebrew/bin/tmux switch-client -t $session\""
           }
         ]
       }
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "session=$(tmux display-message -p '#S' 2>/dev/null); config=$(grep \"^$session:\" ~/dotfiles/tmux/session-colors 2>/dev/null); if [ -n \"$config\" ]; then sound=$(echo \"$config\" | cut -d: -f3); emoji=$(echo \"$config\" | cut -d: -f4); else sound=Glass; emoji=; fi; terminal-notifier -title \"$emoji Claude Code ($session)\" -message \"Waiting for input\" -sound \"$sound\""
+            "command": "session=$(tmux display-message -p '#S' 2>/dev/null); config=$(grep \"^$session:\" ~/dotfiles/tmux/session-colors 2>/dev/null); if [ -n \"$config\" ]; then sound=$(echo \"$config\" | cut -d: -f3); emoji=$(echo \"$config\" | cut -d: -f4); else sound=Glass; emoji=; fi; terminal-notifier -title \"$emoji $session (cc)\" -message \"Waiting for input\" -sound \"$sound\" -activate com.mitchellh.ghostty -execute \"/opt/homebrew/bin/tmux switch-client -t $session\""
           }
         ]
       }
