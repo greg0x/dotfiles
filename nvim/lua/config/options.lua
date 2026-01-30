@@ -44,7 +44,7 @@ opt.backup = false
 
 -- Spell checking (treesitter scopes this to comments/strings)
 opt.spell = true
-opt.spelllang = "en_us"
+opt.spelllang = "en_us,hu"
 
 -- Better display
 opt.list = true
