@@ -12,8 +12,10 @@ return {
     { "<leader>fr", function() Snacks.picker.recent() end, desc = "Recent files" },
     { "<leader>fs", function() Snacks.picker.lsp_symbols() end, desc = "LSP symbols" },
     { "<leader>fw", function() Snacks.picker.grep_word() end, desc = "Grep word", mode = { "n", "x" } },
-    { "<leader>/", function() Snacks.picker.lines() end, desc = "Search buffer" },
+    { "<leader>/", function() Snacks.picker.grep() end, desc = "Grep" },
+    { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
     { "<leader><space>", function() Snacks.picker.smart() end, desc = "Smart picker" },
+    { "<leader>sk", function() Snacks.picker.keymaps() end, desc = "Search keymaps" },
 
     -- Git
     { "<leader>gg", function() Snacks.lazygit() end, desc = "Lazygit" },
