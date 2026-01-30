@@ -30,8 +30,10 @@ return {
     -- Terminal
     { "<C-/>", function() Snacks.terminal() end, desc = "Terminal", mode = { "n", "t" } },
 
-    -- Utilities
+    -- UI toggles
     { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss notifications" },
+    { "<leader>us", function() Snacks.toggle.option("spell"):toggle() end, desc = "Toggle spelling" },
+    { "<leader>uw", function() Snacks.toggle.option("wrap"):toggle() end, desc = "Toggle wrap" },
     { "<leader>bd", function() Snacks.bufdelete() end, desc = "Delete buffer" },
     { "<leader>z", function() Snacks.zen.zoom() end, desc = "Zoom window" },
     { "<leader>Z", function() Snacks.zen() end, desc = "Zen mode" },
