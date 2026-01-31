@@ -58,8 +58,8 @@ if [[ $selected == "none" ]]; then
     tmux set-option -g status-fg '#c0caf5'
     tmux set-option -g status-left '#[fg=#7aa2f7,bold] #S '
     tmux set-option -g status-right '#[fg=#565f89] %a %d %b %H:%M '
-    tmux set-option -g window-status-current-format '#[fg=#7aa2f7,bold] #I:#{?window_zoomed_flag,󰊓 ,}[#{P:#{?pane_active,*,}#{pane_current_command} }] '
-    tmux set-option -g window-status-format '#[fg=#565f89]#{?window_activity_flag,#[fg=#e0af68],} #I:[#{P:#{pane_current_command} }] '
+    tmux set-option -g window-status-current-format '#[fg=#c0caf5,bold] #I:#{?window_zoomed_flag,󰊓 ,}[#{P:#{?pane_active,*,}#{s/[0-9]+\.[0-9]+\.[0-9]+/cc/:pane_current_command} }] '
+    tmux set-option -g window-status-format '#[fg=#3b4261] #I:[#{P:#{s/[0-9]+\.[0-9]+\.[0-9]+/cc/:pane_current_command} }]#{?window_bell_flag, #[fg=#f7768e]󰂞,#{?window_activity_flag, #[fg=#e0af68]●,}} '
 else
     for c in "${colors[@]}"; do
         name="${c%%:*}"
@@ -73,8 +73,8 @@ else
             # Dark text for readability
             tmux set-option -g status-left "#[bg=$code,fg=$dark,bold] #S "
             tmux set-option -g status-right "#[bg=$code,fg=$dark] %a %d %b %H:%M "
-            tmux set-option -g window-status-current-format "#[bg=$code,fg=$dark,bold] #I:#{?window_zoomed_flag,󰊓 ,}[#{P:#{?pane_active,*,}#{pane_current_command} }] "
-            tmux set-option -g window-status-format "#[bg=$code,fg=$dark] #I:[#{P:#{pane_current_command} }] "
+            tmux set-option -g window-status-current-format "#[bg=$code,fg=$dark,bold] #I:#{?window_zoomed_flag,󰊓 ,}[#{P:#{?pane_active,*,}#{s/[0-9]+\.[0-9]+\.[0-9]+/cc/:pane_current_command} }] "
+            tmux set-option -g window-status-format "#[bg=$code,fg=$dark] #I:[#{P:#{s/[0-9]+\.[0-9]+\.[0-9]+/cc/:pane_current_command} }]#{?window_bell_flag, 󰂞,#{?window_activity_flag, ●,}} "
             break
         fi
     done

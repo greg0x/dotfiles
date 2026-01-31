@@ -24,13 +24,13 @@ if [[ -n $color ]]; then
     tmux set-option -g status-fg "$dark"
     tmux set-option -g status-left "#[bg=$color,fg=$dark,bold] #S "
     tmux set-option -g status-right "#[bg=$color,fg=$dark] %a %d %b %H:%M "
-    tmux set-option -g window-status-current-format "#[bg=$color,fg=$dark,bold] #I:#{?window_zoomed_flag,󰊓 ,}[#{P:#{?pane_active,*,}#{pane_current_command} }] "
-    tmux set-option -g window-status-format "#[bg=$color,fg=$dark] #I:[#{P:#{pane_current_command} }] "
+    tmux set-option -g window-status-current-format "#[bg=$color,fg=$dark,bold] #I:#{?window_zoomed_flag,󰊓 ,}[#{P:#{?pane_active,*,}#{s/[0-9]+\.[0-9]+\.[0-9]+/cc/:pane_current_command} }] "
+    tmux set-option -g window-status-format "#[bg=$color,fg=$dark] #I:[#{P:#{s/[0-9]+\.[0-9]+\.[0-9]+/cc/:pane_current_command} }]#{?window_bell_flag, 󰂞,#{?window_activity_flag, ●,}} "
 else
     tmux set-option -g status-bg '#24283b'
     tmux set-option -g status-fg '#c0caf5'
     tmux set-option -g status-left '#[fg=#7aa2f7,bold] #S '
     tmux set-option -g status-right '#[fg=#565f89] %a %d %b %H:%M '
-    tmux set-option -g window-status-current-format '#[fg=#7aa2f7,bold] #I:#{?window_zoomed_flag,󰊓 ,}[#{P:#{?pane_active,*,}#{pane_current_command} }] '
-    tmux set-option -g window-status-format '#[fg=#565f89]#{?window_activity_flag,#[fg=#e0af68],} #I:[#{P:#{pane_current_command} }] '
+    tmux set-option -g window-status-current-format '#[fg=#c0caf5,bold] #I:#{?window_zoomed_flag,󰊓 ,}[#{P:#{?pane_active,*,}#{s/[0-9]+\.[0-9]+\.[0-9]+/cc/:pane_current_command} }] '
+    tmux set-option -g window-status-format '#[fg=#3b4261] #I:[#{P:#{s/[0-9]+\.[0-9]+\.[0-9]+/cc/:pane_current_command} }]#{?window_bell_flag, #[fg=#f7768e]󰂞,#{?window_activity_flag, #[fg=#e0af68]●,}} '
 fi
