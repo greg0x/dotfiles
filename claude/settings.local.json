@@ -35,7 +35,18 @@
       "Bash(/opt/homebrew/bin/terminal-notifier:*)",
       "Bash(~/dotfiles/scripts/cc-notify.sh)",
       "Bash(tmux list-panes:*)",
-      "Bash(TMUX_TARGET=\"dotfiles:1.3\" ~/dotfiles/scripts/cc-notify.sh:*)"
+      "Bash(TMUX_TARGET=\"dotfiles:1.3\" ~/dotfiles/scripts/cc-notify.sh:*)",
+      "Bash(cargo run:*)",
+      "Bash(ghostty +show-config:*)",
+      "Bash(cargo check:*)",
+      "Bash(rustup target list:*)",
+      "Bash(xcodegen generate:*)",
+      "Bash(open:*)",
+      "Bash(xcodebuild:*)",
+      "Bash(gh pr create:*)",
+      "Bash(git ls-files:*)",
+      "WebFetch(domain:www.freecodecamp.org)",
+      "WebFetch(domain:dogsmile.hu)"
     ]
   }
 }
