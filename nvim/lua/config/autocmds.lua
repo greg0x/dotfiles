@@ -60,6 +60,30 @@ autocmd("FileType", {
     vim.opt_local.linebreak = true
     vim.opt_local.tabstop = 2
     vim.opt_local.shiftwidth = 2
+    -- Highlight bare URLs
+    vim.fn.matchadd("@markup.link.url", "https\\?://[^ )>\"'`]*")
+  end,
+})
+
+-- Convert "description https://url" to markdown links on save
+autocmd("BufWritePre", {
+  group = augroup("markdown_linkify", { clear = true }),
+  pattern = { "*.md" },
+  callback = function()
+    local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+    local changed = false
+    for i, line in ipairs(lines) do
+      -- Match: optional bullet/indent, text (not already a link), URL at end
+      local prefix, desc, url = line:match("^(%s*[%-%*]?%s*)([^%[%]%(%)]+)%s+(https?://[^%s]+)$")
+      if desc and url then
+        desc = desc:gsub("%s+$", "") -- trim trailing space
+        lines[i] = string.format("%s[%s](%s)", prefix or "", desc, url)
+        changed = true
+      end
+    end
+    if changed then
+      vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
+    end
   end,
 })
 

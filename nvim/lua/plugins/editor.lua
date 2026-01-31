@@ -113,6 +113,68 @@ return {
     "MeanderingProgrammer/render-markdown.nvim",
     ft = { "markdown" },
     dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" },
-    opts = {},
+    opts = {
+      link = {
+        enabled = true,
+        hyperlink = '󰌹 ',  -- icon for URLs
+        custom = {
+          web = { pattern = '^http', icon = '󰖟 ' },
+        },
+      },
+    },
+    keys = {
+      { "gx", function()
+        local line = vim.api.nvim_get_current_line()
+        local col = vim.api.nvim_win_get_cursor(0)[2] + 1 -- 1-indexed
+
+        -- Find all markdown links [text](url) with positions
+        local links = {}
+        local pos = 1
+        while true do
+          local s, e, url = line:find("%[.-%]%((.-)%)", pos)
+          if not s then break end
+          table.insert(links, { start = s, finish = e, url = url })
+          pos = e + 1
+        end
+
+        -- Find all bare URLs with positions
+        pos = 1
+        while true do
+          local s, e, url = line:find("(https?://[^%s%)%]]+)", pos)
+          if not s then break end
+          -- Skip if inside a markdown link
+          local dominated = false
+          for _, link in ipairs(links) do
+            if s >= link.start and e <= link.finish then
+              dominated = true
+              break
+            end
+          end
+          if not dominated then
+            table.insert(links, { start = s, finish = e, url = url })
+          end
+          pos = e + 1
+        end
+
+        if #links == 0 then return end
+
+        -- If only one link, open it
+        if #links == 1 then
+          vim.ui.open(links[1].url)
+          return
+        end
+
+        -- Multiple links: find the one under cursor
+        for _, link in ipairs(links) do
+          if col >= link.start and col <= link.finish then
+            vim.ui.open(link.url)
+            return
+          end
+        end
+
+        -- Fallback: open first link
+        vim.ui.open(links[1].url)
+      end, ft = "markdown", desc = "Open link" },
+    },
   },
 }
