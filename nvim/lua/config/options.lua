@@ -5,8 +5,8 @@ opt.number = true
 opt.relativenumber = true
 
 -- Tabs & indentation
-opt.tabstop = 4
-opt.shiftwidth = 4
+opt.tabstop = 2
+opt.shiftwidth = 2
 opt.expandtab = true
 opt.smartindent = true
 
@@ -43,7 +43,7 @@ opt.swapfile = false
 opt.backup = false
 
 -- Spell checking (treesitter scopes this to comments/strings)
-opt.spell = true
+opt.spell = false
 opt.spelllang = "en_us,hu"
 
 -- Better display
