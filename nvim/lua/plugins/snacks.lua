@@ -5,7 +5,7 @@ return {
   lazy = false,
   keys = {
     -- Picker (fuzzy finding)
-    { "<leader>ff", function() Snacks.picker.files() end, desc = "Find files" },
+    { "<leader>ff", function() Snacks.picker.smart() end, desc = "Smart picker" },
     { "<leader>fg", function() Snacks.picker.grep() end, desc = "Grep" },
     { "<leader>fb", function() Snacks.picker.buffers() end, desc = "Buffers" },
     { "<leader>fh", function() Snacks.picker.help() end, desc = "Help" },
@@ -14,7 +14,7 @@ return {
     { "<leader>fw", function() Snacks.picker.grep_word() end, desc = "Grep word", mode = { "n", "x" } },
     { "<leader>/", function() Snacks.picker.grep() end, desc = "Grep" },
     { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
-    { "<leader><space>", function() Snacks.picker.smart() end, desc = "Smart picker" },
+    { "<leader><space>", function() Snacks.picker.files() end, desc = "Find files" },
     { "<leader>sk", function() Snacks.picker.keymaps() end, desc = "Search keymaps" },
 
     -- Git
@@ -34,6 +34,7 @@ return {
 
     -- UI toggles
     { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss notifications" },
+    { "<leader>uN", function() Snacks.notifier.show_history() end, desc = "Notification history" },
     { "<leader>us", function() Snacks.toggle.option("spell"):toggle() end, desc = "Toggle spelling" },
     { "<leader>uw", function() Snacks.toggle.option("wrap"):toggle() end, desc = "Toggle wrap" },
     { "<leader>bd", function() Snacks.bufdelete() end, desc = "Delete buffer" },

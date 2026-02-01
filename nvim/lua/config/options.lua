@@ -1,5 +1,8 @@
 local opt = vim.opt
 
+-- Python provider for molten-nvim
+vim.g.python3_host_prog = vim.fn.expand("~/.local/share/nvim/python-venv/bin/python")
+
 -- Line numbers
 opt.number = true
 opt.relativenumber = true

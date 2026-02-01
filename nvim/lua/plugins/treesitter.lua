@@ -14,6 +14,7 @@ return {
         "go",
         "gomod",
         "gosum",
+        "python",
         -- Web
         "typescript",
         "tsx",
