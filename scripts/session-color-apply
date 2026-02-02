@@ -13,6 +13,13 @@ color=$(tmux show-option -t "$current" -qv @session_color)
 
 if [[ -z $color ]] && [[ -f "$CONFIG" ]]; then
     color=$(grep "^${current}:" "$CONFIG" | cut -d: -f2)
+    # If no match, try base name for grouped sessions (e.g., "notes-43" -> "notes")
+    if [[ -z $color ]]; then
+        base_name=$(echo "$current" | sed 's/-[0-9]*$//')
+        if [[ "$base_name" != "$current" ]]; then
+            color=$(grep "^${base_name}:" "$CONFIG" | cut -d: -f2)
+        fi
+    fi
     # Store in session option for future switches
     if [[ -n $color ]]; then
         tmux set-option -t "$current" @session_color "$color"
