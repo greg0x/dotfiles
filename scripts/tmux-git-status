@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+# Git status for tmux status line
+# Shows: [upstream | folder | branch | status]
+
+cd "$1" 2>/dev/null || exit 0
+
+# Check if in a git repo
+git rev-parse --git-dir &>/dev/null || exit 0
+
+# Get upstream/remote (org/repo format)
+remote_url=$(git remote get-url origin 2>/dev/null)
+if [[ -n $remote_url ]]; then
+    # Extract org/repo from github.com/ORG/REPO.git or similar
+    upstream=$(echo "$remote_url" | sed -E 's#.*(github|gitlab)\.com[:/]([^/]+)/([^/.]+)(\.git)?$#\2/\3#')
+    [[ "$upstream" == "$remote_url" ]] && upstream="" # sed didn't match
+fi
+
+# Get folder name (basename of toplevel or worktree)
+worktree=$(git rev-parse --show-toplevel 2>/dev/null)
+folder=$(basename "$worktree" 2>/dev/null)
+
+# Get branch name
+branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+[[ "$branch" == "HEAD" ]] && branch=$(git rev-parse --short HEAD 2>/dev/null)
+
+# Get status indicators
+status=""
+# Uncommitted changes
+git diff --quiet 2>/dev/null || status+="*"
+# Staged changes
+git diff --cached --quiet 2>/dev/null || status+="+"
+# Untracked files
+[[ -n $(git ls-files --others --exclude-standard 2>/dev/null | head -1) ]] && status+="?"
+
+# Build output
+parts=()
+[[ -n $upstream ]] && parts+=("$upstream")
+[[ -n $folder ]] && parts+=("$folder")
+[[ -n $branch ]] && parts+=("$branch")
+[[ -n $status ]] && parts+=("$status")
+
+if [[ ${#parts[@]} -gt 0 ]]; then
+    IFS='•' ; echo " ${parts[*]} "
+fi
