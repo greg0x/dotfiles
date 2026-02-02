@@ -68,6 +68,13 @@ map({ "n", "i", "v", "s" }, "<C-s>", "<cmd>w<cr><Esc>", { desc = "Save file" })
 -- New file
 map("n", "<leader>fn", "<cmd>enew<cr>", { desc = "New file" })
 
+-- Copy file path
+map("n", "<leader>fy", function()
+  local path = vim.fn.expand("%:p")
+  vim.fn.setreg("+", path)
+  vim.notify("Copied: " .. path)
+end, { desc = "Copy absolute path" })
+
 -- Diagnostic navigation
 map("n", "]e", function() vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR }) end, { desc = "Next error" })
 map("n", "[e", function() vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR }) end, { desc = "Prev error" })
