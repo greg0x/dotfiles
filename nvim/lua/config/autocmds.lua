@@ -70,12 +70,55 @@ autocmd("BufWritePre", {
   group = augroup("markdown_linkify", { clear = true }),
   pattern = { "*.md" },
   callback = function()
+    -- Extract a nice title from URL (e.g., repo name from GitHub)
+    local function url_to_title(url)
+      -- GitHub: github.com/user/repo -> repo
+      -- GitHub issues/PRs: github.com/user/repo/issues/123 -> repo#123
+      local user, repo, type, num = url:match("github%.com/([^/]+)/([^/]+)/(%w+)/(%d+)")
+      if repo and type and num then
+        if type == "issues" or type == "pull" then
+          return repo .. "#" .. num
+        end
+      end
+      local _, repo_only = url:match("github%.com/([^/]+)/([^/]+)/?$")
+      if repo_only then
+        return repo_only
+      end
+      -- Fallback: last meaningful path segment or full URL
+      local last_segment = url:match("/([^/]+)/?$")
+      if last_segment and not last_segment:match("^%d+$") and #last_segment > 1 then
+        return last_segment
+      end
+      return url
+    end
+
     local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
     local changed = false
     for i, line in ipairs(lines) do
-      -- Match: optional bullet/indent, text (not already a link), URL at end
-      local prefix, desc, url = line:match("^(%s*[%-%*]?%s*)([^%[%]%(%)]+)%s+(https?://[^%s]+)$")
-      if desc and url then
+      local prefix, desc, url
+
+      -- Try bullet + description + URL
+      prefix, desc, url = line:match("^(%s*[%-%*]%s+)([^%[%]%(%)]+)%s+(https?://[^%s]+)$")
+      if not desc then
+        -- Try without bullet (desc must not start with bullet)
+        prefix, desc, url = line:match("^(%s*)([^%[%]%(%)%-%*][^%[%]%(%)]*)%s+(https?://[^%s]+)$")
+      end
+      if not desc then
+        -- Try bullet + URL only (no description)
+        prefix, url = line:match("^(%s*[%-%*]%s+)(https?://[^%s]+)$")
+        if url then
+          desc = url_to_title(url)
+        end
+      end
+      if not desc then
+        -- Try bare URL only (no bullet, no description)
+        prefix, url = line:match("^(%s*)(https?://[^%s]+)$")
+        if url then
+          desc = url_to_title(url)
+        end
+      end
+
+      if desc and url and desc:match("%S") then
         desc = desc:gsub("%s+$", "") -- trim trailing space
         lines[i] = string.format("%s[%s](%s)", prefix or "", desc, url)
         changed = true
