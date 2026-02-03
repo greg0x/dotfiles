@@ -1,15 +1,23 @@
 return {
-  -- Convert .ipynb to editable format on open
+  -- Convert .ipynb to editable format
   {
     "goerz/jupytext.nvim",
     version = "0.2.*",
     opts = {
-      format = "py:percent",  -- Uses # %% cell markers
+      format = "py:percent",
       jupytext = vim.fn.expand("~/.local/share/nvim/python-venv/bin/jupytext"),
     },
   },
 
-  -- Jupyter kernel execution
+  -- Notebook workflow (pyworks provides keymaps via ~ menu)
+  {
+    "jeryldev/pyworks.nvim",
+    dependencies = { "benlubas/molten-nvim", "3rd/image.nvim" },
+    ft = { "python" },
+    opts = {},
+  },
+
+  -- Kernel execution
   {
     "benlubas/molten-nvim",
     version = "^1.0.0",
@@ -19,29 +27,26 @@ return {
       vim.g.molten_image_provider = "image.nvim"
       vim.g.molten_output_win_max_height = 30
       vim.g.molten_auto_open_output = true
-      vim.g.molten_virt_text_output = false
       vim.g.molten_wrap_output = true
-      vim.g.molten_output_show_more = true
-    end,
-    config = function()
-      -- Cell navigation (# %% markers) - using ]j/[j to avoid conflict with ]c class motion
-      vim.keymap.set("n", "]j", function()
-        vim.fn.search("^# %%", "W")
-      end, { desc = "Next cell" })
-      vim.keymap.set("n", "[j", function()
-        vim.fn.search("^# %%", "bW")
-      end, { desc = "Prev cell" })
     end,
     keys = {
-      { "<leader>ji", "<cmd>MoltenInit<cr>", desc = "Init kernel" },
-      { "<leader>ja", "<cmd>MoltenReevaluateAll<cr>", desc = "Run all cells" },
-      { "<leader>jl", "<cmd>MoltenEvaluateLine<cr>", desc = "Eval line" },
-      { "<leader>jr", "<cmd>MoltenReevaluateCell<cr>", desc = "Re-eval cell" },
-      { "<leader>jo", "<cmd>MoltenShowOutput<cr>", desc = "Show output" },
-      { "<leader>jO", "<cmd>MoltenHideOutput<cr>", desc = "Hide output" },
-      { "<leader>jd", "<cmd>MoltenDelete<cr>", desc = "Delete cell" },
-      { "<leader>jx", "<cmd>MoltenInterrupt<cr>", desc = "Interrupt kernel" },
-      { "<leader>j", ":<C-u>MoltenEvaluateVisual<cr>gv", mode = "v", desc = "Eval selection" },
+      {
+        "<leader>jv",
+        function()
+          local cwd = vim.fn.getcwd()
+          vim.notify("Setting up venv...", vim.log.levels.INFO)
+          vim.fn.jobstart("cd " .. vim.fn.shellescape(cwd) .. " && uv venv 2>/dev/null; uv pip install ipykernel numpy matplotlib pandas", {
+            on_exit = function(_, code)
+              if code == 0 then
+                vim.notify("Venv ready! Restart nvim, then press i to init kernel", vim.log.levels.INFO)
+              else
+                vim.notify("Venv setup failed", vim.log.levels.ERROR)
+              end
+            end,
+          })
+        end,
+        desc = "Setup venv",
+      },
     },
   },
 }

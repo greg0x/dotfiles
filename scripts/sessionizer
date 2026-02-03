@@ -3,8 +3,17 @@
 CONFIG="$HOME/dotfiles/tmux/session-colors"
 HISTORY="$HOME/.cache/sessionizer-history"
 
-# Build list: recent selections first, then all directories
+# Get paths for currently open tmux sessions
+get_session_paths() {
+    tmux list-sessions -F '#{session_name}' 2>/dev/null | while read -r session; do
+        # Get the working directory of the first pane in the first window
+        tmux display-message -t "$session:1.1" -p '#{pane_current_path}' 2>/dev/null
+    done
+}
+
+# Build list: open sessions first, then recent, then all directories
 selected=$({
+    get_session_paths
     [[ -f "$HISTORY" ]] && cat "$HISTORY"
     fd -H --type d --max-depth 4 . ~/dev
     echo "$HOME/notes"
@@ -52,7 +61,7 @@ create_session() {
     tmux split-window -t "$session_name:editor" -h -l 33% -c "$selected"
 
     # pane 1 = nvim with explorer (left), pane 2 = claude (right)
-    tmux send-keys -t "$session_name:editor.1" 'nvim +"lua Snacks.explorer()"' Enter
+    tmux send-keys -t "$session_name:editor.1" 'nvim' Enter
     tmux send-keys -t "$session_name:editor.2" "cc" Enter
 
     # Window 2: plain shell
