@@ -91,3 +91,6 @@ map("n", "gcO", "O<Esc>Vcx<Esc><cmd>normal gcc<cr>fxa<bs>", { desc = "Add commen
 -- Better indenting (stays selected)
 map("v", "<", "<gv", { desc = "Indent left" })
 map("v", ">", ">gv", { desc = "Indent right" })
+
+-- Option+Backspace to delete word (like macOS)
+map("i", "<M-BS>", "<C-w>", { desc = "Delete word backwards" })
