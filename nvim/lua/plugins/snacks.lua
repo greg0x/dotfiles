@@ -16,6 +16,7 @@ return {
     { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
     { "<leader><space>", function() Snacks.picker.files() end, desc = "Find files" },
     { "<leader>sk", function() Snacks.picker.keymaps() end, desc = "Search keymaps" },
+    { "<leader>fm", function() Snacks.picker.marks() end, desc = "Marks" },
 
     -- Git
     { "<leader>gg", function() Snacks.lazygit() end, desc = "Lazygit" },

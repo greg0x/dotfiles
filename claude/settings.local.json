@@ -147,7 +147,23 @@
       "Bash(col:*)",
       "Bash(tmux -V:*)",
       "Bash(git fetch:*)",
-      "WebFetch(domain:jupytext.readthedocs.io)"
+      "WebFetch(domain:jupytext.readthedocs.io)",
+      "Bash(git apply:*)",
+      "WebFetch(domain:docs.rs)",
+      "WebFetch(domain:crates.io)",
+      "Bash(cargo update:*)",
+      "Bash(head:*)",
+      "Bash(sort:*)",
+      "Bash(rustc:*)",
+      "Bash(cargo --version:*)",
+      "Bash(git stash:*)",
+      "Bash(make xcframework:*)",
+      "Bash(sqlite3 \"/Users/greg/Library/Developer/CoreSimulator/Devices/018ED467-22CD-43B3-A16F-536DCFA718E7/data/Containers/Data/Application/14F17B09-5896-4CF8-A940-D650E28AA4FE/Documents/ZcashSdk_mainnet_data.db\" \".tables\")",
+      "Bash(sqlite3:*)",
+      "WebFetch(domain:jdhao.github.io)",
+      "WebFetch(domain:linkarzu.com)",
+      "WebFetch(domain:neovim.io)"
     ]
-  }
+  },
+  "outputStyle": "default"
 }

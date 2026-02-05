@@ -1,0 +1,35 @@
+#!/bin/bash
+# Strip whitespace from tmux copy selection:
+# - Single line: trim leading/trailing whitespace
+# - Multi-line: dedent by first line's indent, trim trailing whitespace from all lines
+
+input=$(cat)
+line_count=$(echo "$input" | wc -l)
+
+if [ "$line_count" -eq 1 ]; then
+    echo "$input" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | tr -d '\n' | pbcopy
+else
+    # Get leading whitespace of first line
+    first_line=$(echo "$input" | head -1)
+    indent=$(echo "$first_line" | sed 's/^\([[:space:]]*\).*/\1/')
+
+    # Use awk to strip exactly that prefix (or less if line has less indent)
+    echo "$input" | awk -v prefix="$indent" '
+    BEGIN { plen = length(prefix) }
+    {
+        # Strip trailing whitespace
+        sub(/[[:space:]]*$/, "")
+
+        # Strip leading whitespace up to prefix length
+        if (plen > 0) {
+            lead = ""
+            for (i = 1; i <= plen && i <= length($0); i++) {
+                c = substr($0, i, 1)
+                if (c == " " || c == "\t") lead = lead c
+                else break
+            }
+            if (length(lead) > 0) $0 = substr($0, length(lead) + 1)
+        }
+        print
+    }' | pbcopy
+fi

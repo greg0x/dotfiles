@@ -4,3 +4,4 @@ font-size = 12
 theme = TokyoNight Storm
 macos-option-as-alt = left
 image-storage-limit = 320000000
+macos-titlebar-style = hidden

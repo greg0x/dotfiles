@@ -67,13 +67,59 @@ return {
         },
         move = {
           enable = true,
-          goto_next_start = { ["]f"] = "@function.outer", ["]c"] = "@class.outer" },
-          goto_prev_start = { ["[f"] = "@function.outer", ["[c"] = "@class.outer" },
+          set_jumps = true,
+          goto_next_start = {
+            ["]f"] = "@function.outer",
+            ["]c"] = "@class.outer",
+          },
+          goto_prev_start = {
+            ["[f"] = "@function.outer",
+            ["[c"] = "@class.outer",
+          },
+          goto_next_end = {
+            ["]F"] = "@function.outer",
+            ["]C"] = "@class.outer",
+          },
+          goto_prev_end = {
+            ["[F"] = "@function.outer",
+            ["[C"] = "@class.outer",
+          },
         },
       },
     },
     config = function(_, opts)
       require("nvim-treesitter.configs").setup(opts)
+
+      -- Manually set up textobjects move keymaps
+      local ts_move = require("nvim-treesitter.textobjects.move")
+      local map = vim.keymap.set
+
+      map({ "n", "x", "o" }, "]f", function()
+        ts_move.goto_next_start("@function.outer")
+        if vim.bo.filetype == "rust" then
+          vim.fn.search([[fn \zs\w]], "c", vim.fn.line(".") + 5)
+        end
+      end, { desc = "Next function" })
+      map({ "n", "x", "o" }, "[f", function()
+        if vim.bo.filetype == "rust" then
+          local col = vim.fn.col(".")
+          local line = vim.api.nvim_get_current_line()
+          -- If at column 0 or line doesn't have fn, go to previous function
+          if col == 1 or not line:match("fn%s+%w") then
+            ts_move.goto_previous_start("@function.outer")
+            vim.fn.search([[fn \zs\w]], "c", vim.fn.line(".") + 5)
+          else
+            -- Jump to function name on current line
+            vim.fn.search([[fn \zs\w]], "bc", vim.fn.line("."))
+          end
+        else
+          ts_move.goto_previous_start("@function.outer")
+        end
+      end, { desc = "Prev function" })
+      map({ "n", "x", "o" }, "]c", function() ts_move.goto_next_start("@class.outer") end, { desc = "Next class" })
+      map({ "n", "x", "o" }, "[c", function() ts_move.goto_previous_start("@class.outer") end, { desc = "Prev class" })
+      map({ "n", "x", "o" }, "]F", function() ts_move.goto_next_end("@function.outer") end, { desc = "Next function end" })
+      map({ "n", "x", "o" }, "[F", function() ts_move.goto_previous_end("@function.outer") end, { desc = "Prev function end" })
     end,
   },
 

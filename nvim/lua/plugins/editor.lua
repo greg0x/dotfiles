@@ -298,4 +298,15 @@ return {
 			},
 		},
 	},
+
+	-- Show marks in signcolumn and highlight marked lines
+	{
+		"chentoast/marks.nvim",
+		event = "VeryLazy",
+		opts = {
+			default_mappings = true,
+			signs = true,
+			highlight_line = true,
+		},
+	},
 }
