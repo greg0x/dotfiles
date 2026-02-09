@@ -79,6 +79,17 @@ return {
         },
       })
 
+      -- Biome (linting diagnostics + code actions for JS/TS/JSON/CSS)
+      lspconfig.biome.setup({
+        capabilities = capabilities,
+        on_new_config = function(new_config, new_root_dir)
+          local local_biome = new_root_dir .. "/node_modules/.bin/biome"
+          if vim.fn.executable(local_biome) == 1 then
+            new_config.cmd = { local_biome, "lsp-proxy" }
+          end
+        end,
+      })
+
       -- Kotlin
       lspconfig.kotlin_language_server.setup({
         capabilities = capabilities,

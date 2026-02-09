@@ -44,6 +44,7 @@ opt.completeopt = "menu,menuone,noselect"
 -- Disable swap/backup (we have git)
 opt.swapfile = false
 opt.backup = false
+opt.backupcopy = "yes" -- write in-place to preserve inode (keeps file watchers working)
 
 -- Spell checking (treesitter scopes this to comments/strings)
 opt.spell = false

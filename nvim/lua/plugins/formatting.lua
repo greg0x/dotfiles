@@ -17,13 +17,13 @@ return {
         typescriptreact = { "biome", "prettier", stop_after_first = true },
         json = { "biome", "prettier", stop_after_first = true },
         jsonc = { "biome", "prettier", stop_after_first = true },
+        css = { "biome", "prettier", stop_after_first = true },
         swift = { "swiftformat" },
         kotlin = { "ktlint" },
         lua = { "stylua" },
         yaml = { "prettier" },
         markdown = { "prettier" },
         html = { "prettier" },
-        css = { "prettier" },
       },
       format_on_save = function(bufnr)
         -- Disable autoformat with :let g:disable_autoformat = 1

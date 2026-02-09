@@ -94,3 +94,7 @@ map("v", ">", ">gv", { desc = "Indent right" })
 
 -- Option+Backspace to delete word (like macOS)
 map("i", "<M-BS>", "<C-w>", { desc = "Delete word backwards" })
+
+-- Move in insert mode
+map("i", "<C-h>", "<Left>", { desc = "Move left" })
+map("i", "<C-l>", "<Right>", { desc = "Move right" })

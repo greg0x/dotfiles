@@ -1,11 +1,12 @@
 # Dotfiles
 
-Neovim + tmux + AI tooling for Rust/Go/TypeScript development.
+Minimal neovim + tmux + amp setup for AI-assisted Rust/Go development.
 
 ## Quick Install
 
 ```bash
 cd ~/dotfiles
+chmod +x install.sh
 ./install.sh
 ```
 
@@ -22,28 +23,16 @@ dotfiles/
 │       │   └── autocmds.lua
 │       └── plugins/
 │           ├── snacks.lua      # picker, lazygit, explorer, terminal
-│           ├── lsp.lua         # rust-analyzer, gopls, ts_ls
+│           ├── lsp.lua         # rust-analyzer, gopls
 │           ├── completion.lua  # blink.cmp
 │           ├── treesitter.lua
-│           ├── editor.lua      # harpoon, flash, mini.*, trouble
-│           ├── formatting.lua  # conform.nvim
 │           ├── ui.lua          # tokyonight, lualine, which-key
-│           ├── git.lua         # gitsigns, gitlinker, octo
+│           ├── git.lua         # gitsigns, octo
 │           ├── tmux.lua        # vim-tmux-navigator
-│           └── ai.lua          # amp.nvim, claudecode.nvim
+│           └── ai.lua          # amp.nvim
 ├── tmux/
-│   ├── tmux.conf
-│   └── session-colors         # persisted session color mappings
-├── scripts/
-│   ├── sessionizer            # fzf project switcher with auto-layout
-│   ├── session-color          # pick session status bar color
-│   └── session-color-apply    # hook to apply colors on switch
-├── ghostty/
-│   └── config
-├── claude/
-│   └── settings.json
+│   └── tmux.conf
 ├── amp/
-│   ├── settings.json
 │   └── AGENTS.md
 ├── install.sh
 └── README.md
@@ -51,54 +40,38 @@ dotfiles/
 
 ## Key Bindings
 
-### Neovim (leader = Space)
+### Leader = Space
 
-| Key | Action |
-|-----|--------|
-| `<leader>ff` | Find files |
-| `<leader>fg` | Grep |
-| `<leader>fb` | Buffers |
-| `<leader><space>` | Smart picker |
-| `<leader>e` | File explorer |
-| `<leader>gg` | Lazygit |
-| `gd` | Go to definition |
-| `gr` | References |
-| `K` | Hover docs |
-| `<leader>ca` | Code action |
-| `<leader>cr` | Rename |
-| `<leader>1-4` | Harpoon files |
-| `s` | Flash jump |
+| Key               | Action           |
+| ----------------- | ---------------- |
+| `<leader>ff`      | Find files       |
+| `<leader>fg`      | Grep             |
+| `<leader>fb`      | Buffers          |
+| `<leader><space>` | Smart picker     |
+| `<leader>e`       | File explorer    |
+| `<leader>gg`      | Lazygit          |
+| `<leader>aa`      | Open Amp         |
+| `gd`              | Go to definition |
+| `gr`              | References       |
+| `K`               | Hover docs       |
+| `<leader>ca`      | Code action      |
+| `<leader>cr`      | Rename           |
 
 ### Tmux (prefix = C-a)
 
-| Key | Action |
-|-----|--------|
-| `C-a \|` | Split vertical |
-| `C-a -` | Split horizontal |
-| `C-a f` | Sessionizer (project picker) |
-| `C-a g` | Lazygit popup |
-| `C-a C` | Session color picker |
+| Key         | Action                             |
+| ----------- | ---------------------------------- | -------------- |
+| `C-a        | `                                  | Split vertical |
+| `C-a -`     | Split horizontal                   |
+| `C-a g`     | Lazygit popup                      |
 | `C-h/j/k/l` | Navigate panes (works in nvim too) |
-| `M-1..5` | Switch windows |
-| `M-h/l` | Prev/next window |
+| `M-1..5`    | Switch windows                     |
 
 ## Dependencies
 
 - neovim >= 0.10
-- tmux
-- ghostty
-- git, ripgrep, fd, fzf
-- lazygit
+- git, ripgrep, fd
 - go, rust (rustup)
-- Nerd Font (JetBrainsMono recommended)
-
-### AI Tools
-- claude CLI (`cc`)
+- lazygit
+- Nerd Font (recommended: JetBrainsMono)
 - amp CLI
-
-## Todo
-
-- [ ] Shell config (zshrc/bashrc) - fzf integration, PATH, aliases
-- [ ] App installations in install.sh (brew bundle or similar)
-- [ ] Aerospace + Karabiner configs
-- [ ] Git config (.gitconfig)

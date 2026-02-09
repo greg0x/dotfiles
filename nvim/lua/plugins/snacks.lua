@@ -39,10 +39,15 @@ return {
     { "<leader>us", function() Snacks.toggle.option("spell"):toggle() end, desc = "Toggle spelling" },
     { "<leader>uw", function() Snacks.toggle.option("wrap"):toggle() end, desc = "Toggle wrap" },
     { "<leader>bd", function() Snacks.bufdelete() end, desc = "Delete buffer" },
+    { "<leader>uA", function()
+      Snacks.toggle.animate():toggle()
+      require("smear_cursor").toggle()
+    end, desc = "Toggle animations" },
     { "<leader>z", function() Snacks.zen.zoom() end, desc = "Zoom window" },
     { "<leader>Z", function() Snacks.zen() end, desc = "Zen mode" },
   },
   opts = {
+    animate = { enabled = true },
     bigfile = { enabled = true },
     dashboard = { enabled = false }, -- keep minimal
     explorer = {
@@ -53,9 +58,43 @@ return {
     input = { enabled = true },
     lazygit = { enabled = true },
     notifier = { enabled = true },
-    picker = { enabled = true },
+    picker = {
+      enabled = true,
+      actions = {
+        toggle_hidden_ignored = function(picker)
+          picker.opts.hidden = not picker.opts.hidden
+          picker.opts.ignored = not picker.opts.ignored
+          picker.list:set_target()
+          picker:find()
+        end,
+      },
+      win = {
+        input = {
+          keys = {
+            ["<a-i>"] = { "toggle_hidden_ignored", mode = { "i", "n" } },
+          },
+        },
+        list = {
+          keys = {
+            ["<a-i>"] = "toggle_hidden_ignored",
+          },
+        },
+      },
+      sources = {
+        explorer = {
+          win = {
+            list = {
+              keys = {
+                ["<a-i>"] = "toggle_hidden_ignored",
+              },
+            },
+          },
+        },
+      },
+    },
     quickfile = { enabled = true },
     scope = { enabled = true },
+    scroll = { enabled = true },
     statuscolumn = { enabled = false }, -- using lualine
     terminal = { enabled = true },
     words = { enabled = true },

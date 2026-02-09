@@ -23,13 +23,13 @@
       }
     ]
   },
-  "ideAutoConnect": true,
   "enabledPlugins": {
     "lua-lsp@claude-plugins-official": true,
     "rust-analyzer-lsp@claude-plugins-official": true,
     "clangd-lsp@claude-plugins-official": true,
     "swift-lsp@claude-plugins-official": true
   },
+  "ideAutoConnect": true,
   "allow": [
     "Bash(*)",
     "Read(~/dev/**)",

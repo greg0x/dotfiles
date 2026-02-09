@@ -76,6 +76,12 @@ return {
     end,
   },
 
+  -- Cursor animation
+  {
+    "sphamba/smear-cursor.nvim",
+    opts = {},
+  },
+
   -- Icons
   { "nvim-tree/nvim-web-devicons", lazy = true },
 }

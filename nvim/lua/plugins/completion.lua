@@ -5,6 +5,7 @@ return {
     event = "InsertEnter",
     dependencies = {
       "rafamadriz/friendly-snippets",
+      "Kaiser-Yang/blink-cmp-git",
     },
     opts = {
       keymap = {
@@ -23,6 +24,16 @@ return {
       },
       sources = {
         default = { "lsp", "path", "snippets", "buffer" },
+        per_filetype = {
+          octo = { "git", "path", "buffer" },
+          gitcommit = { "git", "path", "buffer" },
+        },
+        providers = {
+          git = {
+            module = "blink-cmp-git",
+            name = "Git",
+          },
+        },
       },
       completion = {
         accept = { auto_brackets = { enabled = true } },
