@@ -5,3 +5,5 @@ theme = TokyoNight Storm
 macos-option-as-alt = left
 image-storage-limit = 320000000
 macos-titlebar-style = hidden
+custom-shader = shaders/cursor_warp.glsl
+custom-shader-animation = always
