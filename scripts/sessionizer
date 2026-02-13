@@ -15,10 +15,10 @@ get_session_paths() {
 selected=$({
     get_session_paths
     [[ -f "$HISTORY" ]] && cat "$HISTORY"
-    fd -H --type d --max-depth 4 . ~/dev
     echo "$HOME/notes"
     echo "$HOME/dotfiles"
-} | awk '!seen[$0]++' | fzf --reverse)
+    fd -H --type d --max-depth 4 . ~/dev
+} | awk '!seen[$0]++' | fzf --reverse --scheme=history)
 
 [[ -z $selected ]] && exit 0
 
