@@ -200,18 +200,18 @@ return {
 		cmd = "GrugFar",
 		keys = {
 			{
-				"<leader>sr",
+				"<leader>fR",
 				function()
 					require("grug-far").open()
 				end,
-				desc = "Search and replace",
+				desc = "Find and replace",
 			},
 			{
-				"<leader>sr",
+				"<leader>fR",
 				function()
 					require("grug-far").with_visual_selection()
 				end,
-				desc = "Search selection",
+				desc = "Find and replace (selection)",
 				mode = "v",
 			},
 		},

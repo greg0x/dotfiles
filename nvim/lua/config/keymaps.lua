@@ -34,6 +34,14 @@ map("n", "<leader>bd", "<cmd>bdelete<cr>", { desc = "Delete buffer" })
 map("v", "J", ":m '>+1<cr>gv=gv", { desc = "Move down" })
 map("v", "K", ":m '<-2<cr>gv=gv", { desc = "Move up" })
 
+-- Large jumps (>=10) add to jumplist so <C-o> works
+map("n", "j", function()
+	return vim.v.count >= 10 and "m'" .. vim.v.count .. "j" or "j"
+end, { expr = true })
+map("n", "k", function()
+	return vim.v.count >= 10 and "m'" .. vim.v.count .. "k" or "k"
+end, { expr = true })
+
 -- Stay centered
 map("n", "<C-d>", "<C-d>zz", { desc = "Scroll down" })
 map("n", "<C-u>", "<C-u>zz", { desc = "Scroll up" })
@@ -70,16 +78,24 @@ map("n", "<leader>fn", "<cmd>enew<cr>", { desc = "New file" })
 
 -- Copy file path
 map("n", "<leader>fy", function()
-  local path = vim.fn.expand("%:p")
-  vim.fn.setreg("+", path)
-  vim.notify("Copied: " .. path)
+	local path = vim.fn.expand("%:p")
+	vim.fn.setreg("+", path)
+	vim.notify("Copied: " .. path)
 end, { desc = "Copy absolute path" })
 
 -- Diagnostic navigation
-map("n", "]e", function() vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR }) end, { desc = "Next error" })
-map("n", "[e", function() vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR }) end, { desc = "Prev error" })
-map("n", "]w", function() vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.WARN }) end, { desc = "Next warning" })
-map("n", "[w", function() vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.WARN }) end, { desc = "Prev warning" })
+map("n", "]e", function()
+	vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR })
+end, { desc = "Next error" })
+map("n", "[e", function()
+	vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR })
+end, { desc = "Prev error" })
+map("n", "]w", function()
+	vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.WARN })
+end, { desc = "Next warning" })
+map("n", "[w", function()
+	vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.WARN })
+end, { desc = "Prev warning" })
 
 -- Delete other buffers
 map("n", "<leader>bo", "<cmd>%bd|e#|bd#<cr>", { desc = "Delete other buffers" })
@@ -98,3 +114,9 @@ map("i", "<M-BS>", "<C-w>", { desc = "Delete word backwards" })
 -- Move in insert mode
 map("i", "<C-h>", "<Left>", { desc = "Move left" })
 map("i", "<C-l>", "<Right>", { desc = "Move right" })
+
+-- Copy messages to clipboard
+map("n", "<leader>um", function()
+	vim.cmd("redir @+ | messages | redir END")
+	vim.notify("Messages copied to clipboard")
+end, { desc = "Copy messages to clipboard" })

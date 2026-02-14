@@ -7,7 +7,6 @@ return {
       "williamboman/mason-lspconfig.nvim",
     },
     config = function()
-      -- Mason setup
       require("mason").setup()
       require("mason-lspconfig").setup({
         ensure_installed = {
@@ -19,7 +18,6 @@ return {
         automatic_installation = true,
       })
 
-      local lspconfig = require("lspconfig")
       local capabilities = require("blink.cmp").get_lsp_capabilities()
 
       -- Keymaps on attach
@@ -42,8 +40,8 @@ return {
         end,
       })
 
-      -- Rust
-      lspconfig.rust_analyzer.setup({
+      -- Server configs
+      vim.lsp.config("rust_analyzer", {
         capabilities = capabilities,
         settings = {
           ["rust-analyzer"] = {
@@ -53,8 +51,7 @@ return {
         },
       })
 
-      -- Go
-      lspconfig.gopls.setup({
+      vim.lsp.config("gopls", {
         capabilities = capabilities,
         settings = {
           gopls = {
@@ -65,8 +62,7 @@ return {
         },
       })
 
-      -- TypeScript/JavaScript
-      lspconfig.ts_ls.setup({
+      vim.lsp.config("ts_ls", {
         capabilities = capabilities,
         settings = {
           typescript = {
@@ -79,25 +75,25 @@ return {
         },
       })
 
-      -- Biome (linting diagnostics + code actions for JS/TS/JSON/CSS)
-      lspconfig.biome.setup({
-        capabilities = capabilities,
-        on_new_config = function(new_config, new_root_dir)
-          local local_biome = new_root_dir .. "/node_modules/.bin/biome"
-          if vim.fn.executable(local_biome) == 1 then
-            new_config.cmd = { local_biome, "lsp-proxy" }
-          end
-        end,
-      })
-
-      -- Kotlin
-      lspconfig.kotlin_language_server.setup({
+      vim.lsp.config("biome", {
         capabilities = capabilities,
       })
 
-      -- Swift (sourcekit-lsp comes with Xcode, no mason install needed)
-      lspconfig.sourcekit.setup({
+      vim.lsp.config("kotlin_language_server", {
         capabilities = capabilities,
+      })
+
+      vim.lsp.config("sourcekit", {
+        capabilities = capabilities,
+      })
+
+      vim.lsp.enable({
+        "rust_analyzer",
+        "gopls",
+        "ts_ls",
+        "biome",
+        "kotlin_language_server",
+        "sourcekit",
       })
     end,
   },
