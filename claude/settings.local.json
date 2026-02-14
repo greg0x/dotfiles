@@ -311,7 +311,18 @@
       "Bash(make:*)",
       "WebFetch(domain:www.swift.org)",
       "Bash(xcrun simctl list:*)",
-      "Bash(KEYCHAIN_DB=~/Library/Developer/CoreSimulator/Devices/018ED467-22CD-43B3-A16F-536DCFA718E7/data/Library/Keychains/keychain-2-debug.db)"
+      "Bash(KEYCHAIN_DB=~/Library/Developer/CoreSimulator/Devices/018ED467-22CD-43B3-A16F-536DCFA718E7/data/Library/Keychains/keychain-2-debug.db)",
+      "Bash(git -C ~/dev/zcash/zforge ls-files:*)",
+      "Bash(git -C ~/dev/zcash/zally ls-files)",
+      "Bash(git -C ~/dev/zcash/pir ls-files)",
+      "WebFetch(domain:developer.blockchaincommons.com)",
+      "Bash(git -C ~/dev/zcash/pir ls-files:*)",
+      "Bash(git -C ~/dev/zcash/zally ls-files:*)",
+      "Bash(swift run:*)",
+      "Bash(.build/debug/keystone-qr:*)",
+      "Bash(git show-ref:*)",
+      "Bash(git -C /Users/greg/dev/zcash/zally diff)",
+      "Bash(git -C /Users/greg/dev/zcash/zally log --oneline -5)"
     ]
   },
   "outputStyle": "default"
