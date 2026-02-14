@@ -68,7 +68,7 @@ echo "✓ Claude Code config linked"
 
 # Symlink scripts
 mkdir -p ~/dev/bin
-for script in sessionizer session-color session-color-apply; do
+for script in sessionizer session-color session-color-apply dev-clean; do
     ln -sf "$DOTFILES/scripts/$script" ~/dev/bin/$script
 done
 echo "✓ Scripts linked"
