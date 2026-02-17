@@ -322,7 +322,18 @@
       "Bash(.build/debug/keystone-qr:*)",
       "Bash(git show-ref:*)",
       "Bash(git -C /Users/greg/dev/zcash/zally diff)",
-      "Bash(git -C /Users/greg/dev/zcash/zally log --oneline -5)"
+      "Bash(git -C /Users/greg/dev/zcash/zally log --oneline -5)",
+      "Bash(gh pr list:*)",
+      "Bash(buf:*)",
+      "Bash(then)",
+      "Bash(else)",
+      "Bash(fi)",
+      "Bash(done)",
+      "Bash(go version:*)",
+      "Bash(gh run view:*)",
+      "Bash(git -C /Users/greg/dev/zcash/zally log --all --oneline --decorate)",
+      "Bash(git -C /Users/greg/dev/zcash/zally show 0a922c6eb --stat)",
+      "Bash(git -C /Users/greg/dev/zcash/zally show 0a922c6eb)"
     ]
   },
   "outputStyle": "default"

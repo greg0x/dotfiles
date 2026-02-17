@@ -69,7 +69,7 @@ return {
 
 	-- Octo for GitHub PRs
 	{
-		"pwntester/octo.nvim",
+		dir = "~/dev/devenv/octo.nvim",
 		cmd = "Octo",
 		dependencies = {
 			"nvim-lua/plenary.nvim",
@@ -77,12 +77,23 @@ return {
 		},
 		keys = {
 			{ "<leader>go", "<cmd>Octo<cr>", desc = "Octo" },
+
+			-- Issues
+			{ "<leader>gil", "<cmd>Octo issue list<cr>", desc = "List issues" },
+			{ "<leader>gic", "<cmd>Octo issue create<cr>", desc = "Create issue" },
+			{ "<leader>gis", "<cmd>Octo issue search<cr>", desc = "Search issues" },
+			{ "<leader>gim", "<cmd>Octo issue list mentioned=greg0x<cr>", desc = "Issues mentioning me" },
+
+			-- Pull requests
 			{ "<leader>gpl", "<cmd>Octo pr list<cr>", desc = "List PRs" },
 			{ "<leader>gpc", "<cmd>Octo pr create<cr>", desc = "Create PR" },
-			{ "<leader>gps", ":Octo pr search<cr>", desc = "Search PRs" },
-			{ "<leader>gil", "<cmd>Octo issue list<cr>", desc = "List issues" },
-			{ "<leader>gim", "<cmd>Octo issue list mentioned=greg0x<cr>", desc = "Issues mentioning me" },
-			{ "<leader>gis", "<cmd>Octo issue search<cr>", desc = "Search issues" },
+			{ "<leader>gps", "<cmd>Octo pr search<cr>", desc = "Search PRs" },
+
+			-- Milestones
+			{ "<leader>gml", "<cmd>Octo milestone list<cr>", desc = "List milestones" },
+
+			-- Notifications
+			{ "<leader>gn", "<cmd>Octo notification list<cr>", desc = "Notifications" },
 		},
 		opts = {
 			enable_builtin = true,
