@@ -28,7 +28,8 @@ map("n", "<C-Right>", "<cmd>vertical resize +2<cr>", { desc = "Increase width" }
 map("n", "<S-h>", "<cmd>bprevious<cr>", { desc = "Prev buffer" })
 map("n", "<S-l>", "<cmd>bnext<cr>", { desc = "Next buffer" })
 map("n", "<leader>bb", "<cmd>e #<cr>", { desc = "Switch to alternate buffer" })
-map("n", "<leader>bd", "<cmd>bdelete<cr>", { desc = "Delete buffer" })
+map("n", "<leader>bd", function() Snacks.bufdelete() end, { desc = "Delete buffer" })
+map("n", "<C-x>", function() Snacks.bufdelete() end, { desc = "Delete buffer" })
 
 -- Move lines
 map("v", "J", ":m '>+1<cr>gv=gv", { desc = "Move down" })

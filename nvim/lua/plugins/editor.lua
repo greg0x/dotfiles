@@ -109,7 +109,7 @@ return {
 				end,
 				desc = "Prev todo",
 			},
-			{ "<leader>ft", "<cmd>TodoQuickFix<cr>", desc = "Find todos" },
+			{ "<leader>ft", function() Snacks.picker.todo_comments() end, desc = "Find todos" },
 		},
 	},
 
