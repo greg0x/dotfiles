@@ -43,7 +43,19 @@ return {
 	{
 		"folke/flash.nvim",
 		event = "VeryLazy",
-		opts = {},
+		opts = {
+			label = {
+				uppercase = true,
+				format = function(opts)
+					return { { " " .. opts.match.label .. " ", opts.hl_group } }
+				end,
+			},
+			},
+		config = function(_, opts)
+			vim.api.nvim_set_hl(0, "FlashLabel", { fg = "#000000", bg = "#ffd700", bold = true })
+			vim.api.nvim_set_hl(0, "FlashMatch", { fg = "#c0caf5", bg = "#3b4261", underline = true })
+			require("flash").setup(opts)
+		end,
 		keys = {
 			{
 				"s",
