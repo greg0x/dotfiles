@@ -94,6 +94,9 @@ return {
 
 			-- Notifications
 			{ "<leader>gn", "<cmd>Octo notification list<cr>", desc = "Notifications" },
+
+			-- Buffer-local (Octo buffers only)
+			{ "<localleader>cy", "<cmd>Octo comment url<cr>", desc = "Copy comment URL", ft = "octo" },
 		},
 		opts = {
 			enable_builtin = true,
