@@ -14,8 +14,11 @@ return {
           "gopls",
           "ts_ls",
           "kotlin_language_server",
+          "yamlls",
         },
         automatic_installation = true,
+        -- Don't auto-setup servers; we use vim.lsp.config/enable
+        handlers = { function() end },
       })
 
       local capabilities = require("blink.cmp").get_lsp_capabilities()
@@ -88,6 +91,19 @@ return {
         capabilities = capabilities,
       })
 
+      vim.lsp.config("yamlls", {
+        capabilities = capabilities,
+        settings = {
+          yaml = {
+            schemaStore = {
+              enable = false,
+              url = "",
+            },
+            schemas = require("schemastore").yaml.schemas(),
+          },
+        },
+      })
+
       vim.lsp.enable({
         "rust_analyzer",
         "gopls",
@@ -95,6 +111,7 @@ return {
         "biome",
         "kotlin_language_server",
         "sourcekit",
+        "yamlls",
       })
     end,
   },
