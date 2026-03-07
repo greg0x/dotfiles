@@ -84,6 +84,25 @@ map("n", "<leader>fy", function()
 	vim.notify("Copied: " .. path)
 end, { desc = "Copy absolute path" })
 
+-- Copy Obsidian URL (only works inside a vault)
+map("n", "<leader>fo", function()
+	local file = vim.fn.expand("%:p")
+	local dir = vim.fn.fnamemodify(file, ":h")
+	-- Walk up to find .obsidian directory
+	local vault_root = vim.fn.finddir(".obsidian", dir .. ";")
+	if vault_root == "" then
+		vim.notify("Not in an Obsidian vault", vim.log.levels.WARN)
+		return
+	end
+	vault_root = vim.fn.fnamemodify(vault_root, ":h")
+	local vault_name = vim.fn.fnamemodify(vault_root, ":t")
+	local rel_path = file:sub(#vault_root + 2) -- strip vault root + trailing /
+	local encoded_path = rel_path:gsub(" ", "%%20")
+	local url = ("obsidian://open?vault=%s&file=%s"):format(vault_name, encoded_path)
+	vim.fn.setreg("+", url)
+	vim.notify("Copied: " .. url)
+end, { desc = "Copy Obsidian URL" })
+
 -- Diagnostic navigation
 map("n", "]e", function()
 	vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR })
