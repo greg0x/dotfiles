@@ -130,6 +130,25 @@ autocmd("BufWritePre", {
   end,
 })
 
+-- Dim neovim when tmux pane loses focus
+autocmd("FocusLost", {
+  group = augroup("tmux_focus_dim", { clear = true }),
+  callback = function()
+    vim.g._saved_normal_bg = vim.fn.synIDattr(vim.fn.hlID("Normal"), "bg#")
+    vim.api.nvim_set_hl(0, "Normal", { bg = "#16161e" })
+  end,
+})
+
+autocmd("FocusGained", {
+  group = augroup("tmux_focus_restore", { clear = true }),
+  callback = function()
+    local bg = vim.g._saved_normal_bg
+    if bg and bg ~= "" then
+      vim.api.nvim_set_hl(0, "Normal", { bg = bg })
+    end
+  end,
+})
+
 -- Autosave on focus lost or buffer leave
 autocmd({ "FocusLost", "BufLeave" }, {
   group = augroup("autosave", { clear = true }),
