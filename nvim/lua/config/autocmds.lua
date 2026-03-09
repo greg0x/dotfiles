@@ -130,22 +130,18 @@ autocmd("BufWritePre", {
   end,
 })
 
--- Dim neovim when tmux pane loses focus
+-- Match neovim bg to tmux active/inactive pane tint
 autocmd("FocusLost", {
   group = augroup("tmux_focus_dim", { clear = true }),
   callback = function()
-    vim.g._saved_normal_bg = vim.fn.synIDattr(vim.fn.hlID("Normal"), "bg#")
-    vim.api.nvim_set_hl(0, "Normal", { bg = "#16161e" })
+    vim.api.nvim_set_hl(0, "Normal", { bg = "#24283b" })
   end,
 })
 
 autocmd("FocusGained", {
   group = augroup("tmux_focus_restore", { clear = true }),
   callback = function()
-    local bg = vim.g._saved_normal_bg
-    if bg and bg ~= "" then
-      vim.api.nvim_set_hl(0, "Normal", { bg = bg })
-    end
+    vim.api.nvim_set_hl(0, "Normal", { bg = "#16161e" })
   end,
 })
 
