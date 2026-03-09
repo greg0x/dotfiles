@@ -21,6 +21,7 @@ return {
         "javascript",
         "html",
         "css",
+        "scss",
         "json",
         "jsonc",
         -- Mobile
