@@ -17,8 +17,10 @@ return {
           "yamlls",
         },
         automatic_installation = true,
-        -- Don't auto-setup servers; we use vim.lsp.config/enable
-        handlers = { function() end },
+        handlers = {
+          -- No-op: we configure servers via vim.lsp.config/enable below
+          function(server_name) end,
+        },
       })
 
       local capabilities = require("blink.cmp").get_lsp_capabilities()
@@ -103,6 +105,9 @@ return {
           },
         },
       })
+
+      -- Disable vtsls (installed by Mason, conflicts with ts_ls)
+      vim.lsp.enable("vtsls", false)
 
       vim.lsp.enable({
         "rust_analyzer",
