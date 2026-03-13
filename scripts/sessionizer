@@ -29,7 +29,18 @@ selected=$({
 } > "$HISTORY.tmp" && mv "$HISTORY.tmp" "$HISTORY"
 
 # Session name from folder name, replace dots/spaces with underscores
-session_name=$(basename "$selected" | tr './ ' '___')
+base_name=$(basename "$selected" | tr './ ' '___')
+
+# Check if this session already exists (with any prefix)
+existing=$(tmux list-sessions -F '#S' 2>/dev/null | grep -E "^[0-9]+_${base_name}$" | head -1)
+if [[ -n $existing ]]; then
+    session_name="$existing"
+else
+    # Assign next available numeric prefix
+    max_prefix=$(tmux list-sessions -F '#S' 2>/dev/null | grep -oE '^[0-9]+' | sort -n | tail -1)
+    next_prefix=$(printf "%02d" $(( ${max_prefix:--1} + 1 )))
+    session_name="${next_prefix}_${base_name}"
+fi
 
 # Apply saved color for session
 apply_session_color() {
@@ -38,7 +49,10 @@ apply_session_color() {
     local dark="#1a1b26"
 
     if [[ -f "$CONFIG" ]]; then
-        color=$(grep "^${session}:" "$CONFIG" | cut -d: -f2)
+        # Strip numeric prefix for color lookup (e.g., "03_pir" -> "pir")
+        local lookup_name
+        lookup_name=$(echo "$session" | sed 's/^[0-9]*_//')
+        color=$(grep "^${lookup_name}:" "$CONFIG" | cut -d: -f2)
     fi
 
     if [[ -n $color ]]; then
@@ -58,7 +72,7 @@ create_session() {
     tmux new-session -ds "$session_name" -c "$selected" -n "editor"
 
     # Window 1: nvim (2/3) | claude (1/3)
-    tmux split-window -t "$session_name:editor" -h -l 33% -c "$selected"
+    tmux split-window -t "$session_name:editor" -h -l 50% -c "$selected"
 
     # pane 1 = nvim with explorer (left), pane 2 = claude (right)
     tmux send-keys -t "$session_name:editor.1" 'nvim' Enter

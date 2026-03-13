@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+# Reorder tmux sessions by swapping numeric prefixes
+# Usage: session-reorder up|down
+
+direction="$1"
+current=$(tmux display-message -p '#S')
+
+# Get all sessions sorted by name
+sessions=()
+while IFS= read -r s; do sessions+=("$s"); done < <(tmux list-sessions -F '#S' | sort)
+
+# Find current session's index
+current_idx=-1
+for i in "${!sessions[@]}"; do
+    if [[ "${sessions[$i]}" == "$current" ]]; then
+        current_idx=$i
+        break
+    fi
+done
+
+[[ $current_idx -lt 0 ]] && exit 0
+
+# Determine swap target
+if [[ "$direction" == "up" ]]; then
+    (( current_idx == 0 )) && exit 0
+    target_idx=$((current_idx - 1))
+else
+    (( current_idx == ${#sessions[@]} - 1 )) && exit 0
+    target_idx=$((current_idx + 1))
+fi
+
+target="${sessions[$target_idx]}"
+
+# Extract prefixes and base names
+current_prefix=$(echo "$current" | grep -oE '^[0-9]+')
+target_prefix=$(echo "$target" | grep -oE '^[0-9]+')
+current_base=$(echo "$current" | sed 's/^[0-9]*_//')
+target_base=$(echo "$target" | sed 's/^[0-9]*_//')
+
+# Swap prefixes: rename via temp name to avoid collision
+tmux rename-session -t "$current" "tmp_swap_$$"
+tmux rename-session -t "$target" "${current_prefix}_${target_base}"
+tmux rename-session -t "tmp_swap_$$" "${target_prefix}_${current_base}"

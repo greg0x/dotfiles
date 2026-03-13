@@ -12,12 +12,18 @@ dark="#1a1b26"
 color=$(tmux show-option -t "$current" -qv @session_color)
 
 if [[ -z $color ]] && [[ -f "$CONFIG" ]]; then
-    color=$(grep "^${current}:" "$CONFIG" | cut -d: -f2)
-    # If no match, try base name for grouped sessions (e.g., "notes-43" -> "notes")
+    # Strip numeric prefix (e.g., "03_pir" -> "pir") for color lookup
+    base_name=$(echo "$current" | sed 's/^[0-9]*_//')
+    color=$(grep "^${base_name}:" "$CONFIG" | cut -d: -f2)
+    # Also try full name as fallback
     if [[ -z $color ]]; then
-        base_name=$(echo "$current" | sed 's/-[0-9]*$//')
-        if [[ "$base_name" != "$current" ]]; then
-            color=$(grep "^${base_name}:" "$CONFIG" | cut -d: -f2)
+        color=$(grep "^${current}:" "$CONFIG" | cut -d: -f2)
+    fi
+    # Try stripping trailing numbers for grouped sessions (e.g., "pir-43" -> "pir")
+    if [[ -z $color ]]; then
+        group_name=$(echo "$base_name" | sed 's/-[0-9]*$//')
+        if [[ "$group_name" != "$base_name" ]]; then
+            color=$(grep "^${group_name}:" "$CONFIG" | cut -d: -f2)
         fi
     fi
     # Store in session option for future switches

@@ -28,7 +28,9 @@ colors=(
 )
 
 current=$(tmux display-message -p '#S')
-selected=$(printf '%s\n' "${colors[@]}" | cut -d: -f1 | fzf --reverse --header="Color for '$current'")
+# Strip numeric prefix for display and saving (e.g., "03_pir" -> "pir")
+display_name=$(echo "$current" | sed 's/^[0-9]*_//')
+selected=$(printf '%s\n' "${colors[@]}" | cut -d: -f1 | fzf --reverse --header="Color for '$display_name'")
 
 [[ -z $selected ]] && exit 0
 
@@ -52,7 +54,7 @@ save_color() {
 
 if [[ $selected == "none" ]]; then
     tmux set-option -t "$current" @session_color ""
-    save_color "$current" ""
+    save_color "$display_name" ""
     # Reset to default TokyoNight
     tmux set-option -g status-bg '#24283b'
     tmux set-option -g status-fg '#c0caf5'
@@ -66,7 +68,7 @@ else
         code="${c##*:}"
         if [[ $name == "$selected" ]]; then
             tmux set-option -t "$current" @session_color "$code"
-            save_color "$current" "$code"
+            save_color "$display_name" "$code"
             # Color the whole bar
             tmux set-option -g status-bg "$code"
             tmux set-option -g status-fg "$dark"
