@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# Switch to the Nth tmux session by name order (1-indexed)
+# Usage: session-switch-to <number>
+
+n="$1"
+[[ -z "$n" ]] && exit 1
+
+# Get sessions sorted by name
+sessions=()
+while IFS= read -r s; do sessions+=("$s"); done < <(tmux list-sessions -F '#S' | sort)
+
+# Already 0-indexed
+idx=$n
+
+if (( idx >= 0 && idx < ${#sessions[@]} )); then
+    tmux switch-client -t "${sessions[$idx]}"
+fi
