@@ -16,6 +16,8 @@ return {
         hl.LineNrBelow = { fg = "#6a7394" }
         -- Keep current line number bright
         hl.CursorLineNr = { fg = "#c0caf5", bold = true }
+        -- Make picker preview cursor line prominent
+        hl.SnacksPickerPreviewCursorLine = { bg = "#3b4261", bold = true }
       end,
     },
     config = function(_, opts)
