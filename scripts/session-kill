@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+# Kill current tmux session, switch to next, and renumber remaining sessions
+
+current=$(tmux display-message -p '#S')
+
+# Switch to last (previously active) session before killing
+tmux switch-client -l 2>/dev/null
+
+# Kill the original session
+tmux kill-session -t "$current" 2>/dev/null || exit 0
+
+# Renumber remaining sessions to close gaps
+sessions=()
+while IFS= read -r s; do sessions+=("$s"); done < <(tmux list-sessions -F '#S' | sort)
+
+for i in "${!sessions[@]}"; do
+    old="${sessions[$i]}"
+    base=$(echo "$old" | sed 's/^[0-9]*_//')
+    new=$(printf "%02d_%s" "$i" "$base")
+    if [[ "$old" != "$new" ]]; then
+        tmux rename-session -t "$old" "$new"
+    fi
+done

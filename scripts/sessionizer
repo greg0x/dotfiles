@@ -18,6 +18,8 @@ selected=$({
     echo "$HOME/notes"
     echo "$HOME/dotfiles"
     fd -H --type d --max-depth 4 . ~/dev
+    # Include gitignored child repos in workspace directories
+    fd --no-ignore --type d --max-depth 1 . ~/dev/zcash/shielded-vote-workspace
 } | awk '!seen[$0]++' | fzf --reverse --scheme=history)
 
 [[ -z $selected ]] && exit 0
