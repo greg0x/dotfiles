@@ -101,6 +101,7 @@ return {
 		opts = {
 			enable_builtin = true,
 			default_to_projects_v2 = true,
+			default_remote = { "origin", "upstream" },
 			picker = "snacks",
 			issues = {
 				order_by = {

@@ -535,7 +535,8 @@
       "Bash(chmod +x /Users/greg/dev/zcash/upstream-prs/zodl-ios/.git/hooks/pre-commit)",
       "Read(//Users/greg/dev/zcash/upstream-prs/zcash-swift-wallet-sdk/**)",
       "Read(//Users/greg/dev/zcash/**)",
-      "Bash(~/dotfiles/scripts/dev-clean --dry-run ~/dev/zcash)"
+      "Bash(~/dotfiles/scripts/dev-clean --dry-run ~/dev/zcash)",
+      "WebFetch(domain:www.dlvhdr.me)"
     ]
   },
   "outputStyle": "default"
