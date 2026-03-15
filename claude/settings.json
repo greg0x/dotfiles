@@ -28,8 +28,10 @@
     "rust-analyzer-lsp@claude-plugins-official": true,
     "clangd-lsp@claude-plugins-official": true,
     "swift-lsp@claude-plugins-official": true,
-    "gopls-lsp@claude-plugins-official": true
+    "gopls-lsp@claude-plugins-official": true,
+    "figma@claude-plugins-official": true
   },
+  "effortLevel": "high",
   "ideAutoConnect": true,
   "allow": [
     "Bash(*)",
@@ -68,6 +70,5 @@
     "Read(.env)",
     "Read(.env.*)",
     "Read(**/secrets/**)"
-  ],
-  "effortLevel": "high"
+  ]
 }

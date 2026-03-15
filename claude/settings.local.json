@@ -536,7 +536,12 @@
       "Read(//Users/greg/dev/zcash/upstream-prs/zcash-swift-wallet-sdk/**)",
       "Read(//Users/greg/dev/zcash/**)",
       "Bash(~/dotfiles/scripts/dev-clean --dry-run ~/dev/zcash)",
-      "WebFetch(domain:www.dlvhdr.me)"
+      "WebFetch(domain:www.dlvhdr.me)",
+      "WebFetch(domain:www.figma.com)",
+      "Read(//Users/greg/**)",
+      "Read(//Users/greg/.config/aerospace/**)",
+      "WebFetch(domain:ghostty.org)",
+      "Bash(ghostty:*)"
     ]
   },
   "outputStyle": "default"
