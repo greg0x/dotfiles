@@ -19,6 +19,8 @@ keybind = super+digit_6=csi:96~
 keybind = super+digit_7=csi:97~
 keybind = super+digit_8=csi:98~
 keybind = super+digit_9=csi:99~
+keybind = super+h=csi:100~
+keybind = super+l=csi:101~
 font-size = 12
 theme = TokyoNight Storm
 macos-option-as-alt = left
