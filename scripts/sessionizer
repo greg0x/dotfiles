@@ -97,6 +97,8 @@ create_session() {
     # Create session with first window
     if $SANDBOX; then
         tmux new-session -ds "$session_name" -c "$selected" -n "editor" "$sb -- zsh -lic 'nvim; exec zsh'"
+        # All new panes/windows in this session inherit the sandbox
+        tmux set-option -t "$session_name" default-command "$sb -- zsh -li"
     else
         tmux new-session -ds "$session_name" -c "$selected" -n "editor"
         tmux send-keys -t "$session_name:editor.1" 'nvim' Enter
