@@ -23,6 +23,7 @@ require("config.autocmds")
 
 -- Load plugins
 require("lazy").setup("plugins", {
+	lockfile = vim.fn.stdpath("state") .. "/lazy-lock.json",
 	defaults = { lazy = false },
 	install = { colorscheme = { "tokyonight" } },
 	checker = { enabled = false },
