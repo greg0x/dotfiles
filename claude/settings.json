@@ -35,36 +35,15 @@
   "ideAutoConnect": true,
   "allow": [
     "Bash(*)",
-    "Read(~/dev/**)",
-    "Read(~/notes/**)",
-    "Read(~/dotfiles/**)",
-    "Edit(~/dev/**)",
-    "Edit(~/notes/**)",
-    "Edit(~/dotfiles/**)",
-    "Write(~/dev/**)",
-    "Write(~/notes/**)",
-    "Write(~/dotfiles/**)",
-    "WebFetch(*)"
+    "Read(*)",
+    "Edit(*)",
+    "Write(*)",
+    "WebFetch(*)",
+    "WebSearch(*)"
   ],
   "ask": [
-    "Bash(rm:*)",
-    "Bash(rmdir:*)",
-    "Bash(git reset --hard:*)",
-    "Bash(git checkout -- :*)",
-    "Bash(git clean:*)",
-    "Bash(git branch -D:*)",
-    "Bash(git rebase:*)",
-    "Bash(git stash drop:*)",
-    "Bash(git stash clear:*)",
-    "Bash(sudo:*)",
-    "Bash(chmod -R:*)",
-    "Bash(chown -R:*)",
-    "Bash(mv /*:*)",
-    "Bash(dd:*)",
-    "Bash(mkfs:*)",
-    "Bash(kill:*)",
-    "Bash(killall:*)",
-    "Bash(pkill:*)"
+    "Bash(git push:*)",
+    "Bash(git push --force:*)"
   ],
   "deny": [
     "Read(.env)",
