@@ -26,7 +26,7 @@ if [[ -n "${1:-}" && -d "$1" ]]; then
     key=""
 else
     # Build list: open sessions first, then recent, then all directories
-    # ctrl-s opts out of sandbox for trusted repos
+    # alt-enter opts out of sandbox for trusted repos
     selected=$({
         get_session_paths
         [[ -f "$HISTORY" ]] && cat "$HISTORY"
@@ -36,8 +36,8 @@ else
         # Include gitignored child repos in workspace directories
         fd --no-ignore --type d --max-depth 1 . ~/dev/zcash/shielded-vote-workspace
     } | awk '!seen[$0]++' | fzf --reverse --scheme=history \
-        --header "$(if $SANDBOX; then echo '🔒 SANDBOX (ctrl-s: unsandboxed)'; else echo 'ctrl-s: sandbox'; fi)" \
-        --expect=ctrl-s)
+        --header "$(if $SANDBOX; then echo '🔒 SANDBOX (alt-enter: unsandboxed)'; else echo 'alt-enter: sandbox'; fi)" \
+        --expect=alt-enter)
 
     # fzf --expect outputs the key pressed on the first line, selection on second
     key=$(head -1 <<< "$selected")
@@ -46,8 +46,8 @@ fi
 
 [[ -z $selected ]] && exit 0
 
-# ctrl-s toggles sandbox off
-[[ "$key" == "ctrl-s" ]] && SANDBOX=false
+# alt-enter toggles sandbox off
+[[ "$key" == "alt-enter" ]] && SANDBOX=false
 
 # Update history: add selection to top, keep last 20
 {
