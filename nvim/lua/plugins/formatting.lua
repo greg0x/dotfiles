@@ -18,6 +18,7 @@ return {
         json = { "biome", "prettier", stop_after_first = true },
         jsonc = { "biome", "prettier", stop_after_first = true },
         css = { "biome", "prettier", stop_after_first = true },
+        scss = { "prettier" },
         swift = { "swiftformat" },
         kotlin = { "ktlint" },
         lua = { "stylua" },

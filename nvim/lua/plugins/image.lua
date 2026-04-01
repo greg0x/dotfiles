@@ -14,7 +14,7 @@ return {
           filetypes = { "markdown", "vimwiki" },
         },
         neorg = { enabled = false },
-        html = { enabled = false },
+        html = { enabled = true, filetypes = { "html", "markdown" } },
         css = { enabled = false },
       },
       max_width = 100,

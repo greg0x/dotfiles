@@ -91,6 +91,22 @@ return {
     config = function(_, opts)
       require("nvim-treesitter.configs").setup(opts)
 
+      -- Work around a race condition where the treesitter highlighter
+      -- caches a nil query if it initializes before query files are in
+      -- the runtimepath. Detect and clear the stale cache entry.
+      vim.api.nvim_create_autocmd("BufWinEnter", {
+        callback = function(args)
+          local hl = vim.treesitter.highlighter.active[args.buf]
+          if hl then
+            local lang = hl.tree:lang()
+            local q = hl._queries[lang]
+            if q and not q:query() then
+              hl._queries[lang] = nil
+            end
+          end
+        end,
+      })
+
       -- Manually set up textobjects move keymaps
       local ts_move = require("nvim-treesitter.textobjects.move")
       local map = vim.keymap.set

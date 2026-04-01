@@ -1,11 +1,4 @@
 return {
-	-- Amp integration (passive - run `amp --ide` from terminal)
-	{
-		"sourcegraph/amp.nvim",
-		lazy = false,
-		opts = { auto_start = true },
-	},
-
 	-- Claude Code integration
 	{
 		"coder/claudecode.nvim",

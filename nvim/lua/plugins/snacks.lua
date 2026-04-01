@@ -9,7 +9,8 @@ return {
 		{ "<leader>fb", function() Snacks.picker.buffers() end, desc = "Buffers" },
 		{ "<leader>fh", function() Snacks.picker.help() end, desc = "Help" },
 		{ "<leader>fr", function() Snacks.picker.recent() end, desc = "Recent files" },
-		{ "<leader>fs", function() Snacks.picker.lsp_symbols() end, desc = "LSP symbols" },
+		{ "<leader>fs", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP workspace symbols" },
+		{ "<leader>fS", function() Snacks.picker.lsp_symbols() end, desc = "LSP symbols (buffer)" },
 		{ "<leader>fw", function() Snacks.picker.grep_word() end, desc = "Grep word", mode = { "n", "x" } },
 		{ "<leader>/", function() Snacks.picker.grep() end, desc = "Grep" },
 		{ "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
@@ -72,6 +73,10 @@ return {
 						list = {
 							keys = {
 								["<a-i>"] = "toggle_hidden_ignored",
+								["<C-h>"] = { function() vim.fn.system("tmux select-pane -L") end, desc = "Tmux pane left" },
+								["<C-l>"] = { function() vim.fn.system("tmux select-pane -R") end, desc = "Tmux pane right" },
+								["<C-j>"] = { function() vim.fn.system("tmux select-pane -D") end, desc = "Tmux pane down" },
+								["<C-k>"] = { function() vim.fn.system("tmux select-pane -U") end, desc = "Tmux pane up" },
 							},
 							wo = {
 								relativenumber = true,
