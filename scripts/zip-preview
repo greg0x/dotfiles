@@ -1,0 +1,47 @@
+#!/bin/bash
+# Preview a rendered ZIP/draft from any worktree.
+# Usage: zip-preview [draft-name]    (without extension)
+#   zip-preview draft-valargroup-shielded-voting
+#   zip-preview                      (renders all .md drafts, opens index)
+set -euo pipefail
+
+# Find repo root (works inside worktrees)
+root="$(git rev-parse --show-toplevel)"
+cd "$root"
+
+mkdir -p rendered
+cp -r static/* rendered/ 2>/dev/null || true
+
+if [ $# -eq 0 ]; then
+    # Render all markdown ZIPs/drafts
+    for f in zips/*.md; do
+        [ -f "$f" ] || continue
+        base="$(basename "${f%.md}")"
+        echo "Rendering $base..."
+        ./render.sh --mmd "$f" "rendered/${base}.html"
+    done
+    open rendered/
+else
+    name="$1"
+    # Allow with or without extension, with or without zips/ prefix
+    name="${name#zips/}"
+    name="${name%.md}"
+    name="${name%.rst}"
+
+    if [ -f "zips/${name}.md" ]; then
+        ./render.sh --mmd "zips/${name}.md" "rendered/${name}.html"
+        open "rendered/${name}.html"
+    elif [ -f "zips/${name}.rst" ]; then
+        if command -v rst2html5 &>/dev/null; then
+            ./render.sh --rst "zips/${name}.rst" "rendered/${name}.html"
+            open "rendered/${name}.html"
+        else
+            echo "Error: rst2html5 not installed (needed for .rst files)"
+            echo "Install with: pip install docutils"
+            exit 1
+        fi
+    else
+        echo "Not found: zips/${name}.md or zips/${name}.rst"
+        exit 1
+    fi
+fi
