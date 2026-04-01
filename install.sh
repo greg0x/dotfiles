@@ -5,6 +5,13 @@ DOTFILES="$HOME/dotfiles"
 
 echo "Installing dotfiles..."
 
+# Install mise if not present
+if ! command -v mise &>/dev/null; then
+    echo "Installing mise..."
+    curl https://mise.jdx.dev/install.sh | sh
+fi
+echo "✓ Mise available"
+
 # Create config directory
 mkdir -p ~/.config
 
@@ -80,6 +87,21 @@ for script in sessionizer session-color session-color-apply dev-clean; do
     ln -sf "$DOTFILES/scripts/$script" ~/dev/bin/$script
 done
 echo "✓ Scripts linked"
+
+# Install safehouse for sandbox support
+if ! command -v safehouse &>/dev/null; then
+    echo "Installing agent-safehouse..."
+    brew install eugene1g/safehouse/agent-safehouse
+fi
+echo "✓ Safehouse available"
+
+# Install dev toolchain via mise
+mise trust "$DOTFILES/mise/config.toml"
+mise install
+echo "✓ Dev tools installed"
+
+# Create sandbox cache dir
+mkdir -p ~/.cache/oh-my-zsh
 
 echo ""
 echo "Done! Next steps:"
