@@ -23,6 +23,10 @@ keybind = f20=csi:102~
 keybind = super+j=csi:100~
 keybind = super+k=csi:101~
 keybind = super+l=csi:100~
+keybind = super+o=csi:103~
+keybind = super+x=csi:104~
+keybind = super+shift+comma=csi:105~
+keybind = super+shift+period=csi:106~
 font-size = 12
 theme = TokyoNight Storm
 macos-option-as-alt = left
