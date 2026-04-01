@@ -97,7 +97,7 @@ apply_session_color() {
 create_session() {
     local sb
     if $SANDBOX; then
-        sb="safehouse --workdir='$selected' --env-pass=TMUX --enable=shell-init,keychain,ssh --add-dirs-ro='$HOME/dotfiles:$HOME/.local/share/mise:$HOME/.local/share/claude:$HOME/.local/bin:$HOME/.config:$HOME/.oh-my-zsh:$HOME/dev/devenv/octo.nvim:$HOME/.1password' --add-dirs='$HOME/.claude:$HOME/.claude.json:$HOME/.local/share/nvim:$HOME/.local/state/nvim:$HOME/.cache/nvim:$HOME/.cache/oh-my-zsh:$HOME/.gnupg:/private/tmp/tmux-$(id -u)'"
+        sb="safehouse --workdir='$selected' --env-pass=TMUX --enable=shell-init,keychain,ssh,clipboard --add-dirs-ro='$HOME/dotfiles:$HOME/.local/share/mise:$HOME/.local/share/claude:$HOME/.local/bin:$HOME/.config:$HOME/.oh-my-zsh:$HOME/dev/devenv/octo.nvim:$HOME/.1password' --add-dirs='$HOME/.claude:$HOME/.claude.json:$HOME/.local/share/nvim:$HOME/.local/state/nvim:$HOME/.cache/nvim:$HOME/.cache/oh-my-zsh:$HOME/.gnupg:/private/tmp/tmux-$(id -u)'"
     fi
 
     # Create session with first window
