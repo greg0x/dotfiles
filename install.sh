@@ -66,6 +66,19 @@ fi
 ln -sf "$DOTFILES/claude/settings.json" ~/.claude/settings.json
 echo "✓ Claude Code config linked"
 
+# Symlink zsh config
+for f in zshenv zprofile zshrc; do
+    target="$HOME/.$f"
+    if [ -L "$target" ]; then
+        rm "$target"
+    elif [ -f "$target" ]; then
+        echo "Backing up existing $f..."
+        mv "$target" "$target.backup.$(date +%s)"
+    fi
+    ln -sf "$DOTFILES/zsh/$f" "$target"
+done
+echo "✓ Zsh config linked"
+
 # Symlink scripts
 mkdir -p ~/dev/bin
 for script in sessionizer session-color session-color-apply dev-clean; do
