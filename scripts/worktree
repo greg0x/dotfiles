@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+# worktree - Create a git worktree and open it in a tmux session
+# Usage: worktree [name]
+#   name defaults to a random adjective-noun pair
+
+set -euo pipefail
+
+# Must be in a git repo
+repo_root=$(git rev-parse --show-toplevel 2>/dev/null) || { echo "Not in a git repo"; exit 1; }
+
+# Determine base ref
+base_ref=$(git rev-parse --verify origin/HEAD 2>/dev/null) || \
+base_ref=$(git rev-parse --verify origin/main 2>/dev/null) || \
+base_ref=$(git rev-parse --verify origin/master 2>/dev/null) || \
+    { echo "Cannot determine base branch"; exit 1; }
+
+# Name: repo_suffix, where suffix is argument or petname
+repo_name=$(basename "$repo_root" | tr './ ' '___')
+suffix="${1:-$("$HOME/.local/share/mise/shims/petname" | tr '-' '_')}"
+name="${repo_name}_${suffix}"
+worktree_dir="$repo_root/.worktrees/$name"
+branch_name="worktree/$name"
+
+if [[ -d "$worktree_dir" ]]; then
+    echo "Worktree '$name' already exists"
+    exit 1
+fi
+
+# Create worktree
+mkdir -p "$repo_root/.worktrees"
+git worktree add -b "$branch_name" "$worktree_dir" "$base_ref" --quiet
+echo "Created worktree: $name (branch: $branch_name)"
+
+# Copy .worktreeinclude files
+if [[ -f "$repo_root/.worktreeinclude" ]]; then
+    (
+        cd "$repo_root"
+        while IFS= read -r pattern || [[ -n "$pattern" ]]; do
+            [[ -z "$pattern" || "$pattern" == \#* ]] && continue
+            # shellcheck disable=SC2086
+            for file in $pattern; do
+                [[ -f "$file" ]] || continue
+                mkdir -p "$worktree_dir/$(dirname "$file")"
+                cp "$file" "$worktree_dir/$file"
+            done
+        done < .worktreeinclude
+    )
+fi
+
+# Hand off to sessionizer for tmux session creation
+exec ~/dotfiles/scripts/sessionizer "$worktree_dir"

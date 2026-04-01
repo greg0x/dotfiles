@@ -26,6 +26,15 @@ if [[ -z $color ]] && [[ -f "$CONFIG" ]]; then
             color=$(grep "^${group_name}:" "$CONFIG" | cut -d: -f2)
         fi
     fi
+    # Try progressively shorter prefixes (for worktree sessions like "dotfiles_calm_reef" -> "dotfiles")
+    if [[ -z $color ]]; then
+        prefix="$base_name"
+        while [[ "$prefix" == *_* ]]; do
+            prefix="${prefix%_*}"
+            color=$(grep "^${prefix}:" "$CONFIG" | cut -d: -f2)
+            [[ -n $color ]] && break
+        done
+    fi
     # Store in session option for future switches
     if [[ -n $color ]]; then
         tmux set-option -t "$current" @session_color "$color"

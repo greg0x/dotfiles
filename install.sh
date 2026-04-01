@@ -81,9 +81,13 @@ for f in zshenv zprofile zshrc; do
 done
 echo "✓ Zsh config linked"
 
+# Set global gitignore
+git config --global core.excludesfile "$DOTFILES/git/ignore"
+echo "✓ Global gitignore set"
+
 # Symlink scripts
 mkdir -p ~/dev/bin
-for script in sessionizer session-color session-color-apply dev-clean; do
+for script in sessionizer session-color session-color-apply session-kill session-switch session-switch-to session-reorder worktree dev-clean; do
     ln -sf "$DOTFILES/scripts/$script" ~/dev/bin/$script
 done
 echo "✓ Scripts linked"

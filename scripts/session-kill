@@ -1,14 +1,43 @@
 #!/usr/bin/env bash
 
 # Kill current tmux session, switch to next, and renumber remaining sessions
+# Cleans up git worktrees under .worktrees/ if no uncommitted changes
 
 current=$(tmux display-message -p '#S')
+
+# Check if this session is in a .worktrees/ directory before killing
+pane_path=$(tmux display-message -t "$current:1.1" -p '#{pane_current_path}' 2>/dev/null)
+worktree_cleanup=""
+if [[ -n "$pane_path" && "$pane_path" == */.worktrees/* ]]; then
+    wt_root=$(git -C "$pane_path" rev-parse --show-toplevel 2>/dev/null)
+    if [[ -n "$wt_root" && "$wt_root" == */.worktrees/* ]]; then
+        main_repo="${wt_root%/.worktrees/*}"
+        wt_branch=$(git -C "$wt_root" rev-parse --abbrev-ref HEAD 2>/dev/null)
+        # Only auto-remove if clean
+        if git -C "$wt_root" diff --quiet HEAD 2>/dev/null && \
+           git -C "$wt_root" diff --cached --quiet 2>/dev/null && \
+           [[ -z $(git -C "$wt_root" ls-files --others --exclude-standard 2>/dev/null) ]]; then
+            worktree_cleanup="$wt_root"
+        fi
+    fi
+fi
 
 # Switch to last (previously active) session before killing
 tmux switch-client -l 2>/dev/null
 
 # Kill the original session
 tmux kill-session -t "$current" 2>/dev/null || exit 0
+
+# Clean up worktree if flagged
+if [[ -n "$worktree_cleanup" ]]; then
+    git -C "$main_repo" worktree remove "$worktree_cleanup" 2>/dev/null
+    [[ -n "${wt_branch:-}" ]] && git -C "$main_repo" branch -D "$wt_branch" 2>/dev/null
+    # Remove from sessionizer history
+    history_file="$HOME/.cache/sessionizer-history"
+    if [[ -f "$history_file" ]]; then
+        grep -v "^${worktree_cleanup}\$" "$history_file" > "${history_file}.tmp" && mv "${history_file}.tmp" "$history_file"
+    fi
+fi
 
 # Renumber remaining sessions to close gaps
 sessions=()
