@@ -34,14 +34,8 @@ cc() {
   CLAUDE_CODE_SSE_PORT=$(cat ~/.claude/ide/*.lock(N) < /dev/null 2>/dev/null | jq -r ".port") claude "$@"
 }
 
-# Interactive tool init
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
+# Bun completions
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
-
-# Google Cloud SDK
-[ -f "$HOME/Downloads/google-cloud-sdk/path.zsh.inc" ] && . "$HOME/Downloads/google-cloud-sdk/path.zsh.inc"
-[ -f "$HOME/Downloads/google-cloud-sdk/completion.zsh.inc" ] && . "$HOME/Downloads/google-cloud-sdk/completion.zsh.inc"
 
 # ImageMagick
 export MAGICK_HOME=$(brew --prefix imagemagick 2>/dev/null)

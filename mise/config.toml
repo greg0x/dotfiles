@@ -1,0 +1,6 @@
+[tools]
+go = "1.25"
+node = "24"
+bun = "latest"
+rust = "stable"
+java = "zulu-17"

@@ -7,7 +7,6 @@ echo "Installing dotfiles..."
 
 # Create config directory
 mkdir -p ~/.config
-mkdir -p ~/.config/amp
 
 # Symlink nvim config
 if [ -L ~/.config/nvim ]; then
@@ -29,20 +28,16 @@ fi
 ln -sf "$DOTFILES/tmux/tmux.conf" ~/.tmux.conf
 echo "✓ Tmux config linked"
 
-# Symlink amp config
-if [ -L ~/.config/amp/AGENTS.md ]; then
-    rm ~/.config/amp/AGENTS.md
+# Symlink mise config
+mkdir -p ~/.config/mise
+if [ -L ~/.config/mise/config.toml ]; then
+    rm ~/.config/mise/config.toml
+elif [ -f ~/.config/mise/config.toml ]; then
+    echo "Backing up existing mise config..."
+    mv ~/.config/mise/config.toml ~/.config/mise/config.toml.backup.$(date +%s)
 fi
-ln -sf "$DOTFILES/amp/AGENTS.md" ~/.config/amp/AGENTS.md
-
-if [ -L ~/.config/amp/settings.json ]; then
-    rm ~/.config/amp/settings.json
-elif [ -f ~/.config/amp/settings.json ]; then
-    echo "Backing up existing amp settings..."
-    mv ~/.config/amp/settings.json ~/.config/amp/settings.json.backup.$(date +%s)
-fi
-ln -sf "$DOTFILES/amp/settings.json" ~/.config/amp/settings.json
-echo "✓ Amp config linked"
+ln -sf "$DOTFILES/mise/config.toml" ~/.config/mise/config.toml
+echo "✓ Mise config linked"
 
 # Symlink ghostty config
 mkdir -p ~/.config/ghostty
