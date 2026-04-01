@@ -34,8 +34,6 @@ cc() {
   CLAUDE_CODE_SSE_PORT=$(cat ~/.claude/ide/*.lock(N) < /dev/null 2>/dev/null | jq -r ".port") claude "$@"
 }
 
-# Bun completions
-[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 # ImageMagick
 export MAGICK_HOME=$(brew --prefix imagemagick 2>/dev/null)
