@@ -60,7 +60,7 @@ cmd-shift-enter = 'fullscreen'
 # See: https://nikitabobko.github.io/AeroSpace/commands#exec-and-forget
 # You can uncomment the following lines to open up terminal with alt + enter shortcut (like in i3)
 alt-cmd-ctrl-enter = '''exec-and-forget osascript -e '
-tell application "WezTerm"
+tell application "Ghostty"
   activate
 end tell
 '
@@ -227,9 +227,6 @@ run = 'move-node-to-workspace backtick'
 
 # f windows
 
-[[on-window-detected]]
-if.app-id = "com.github.wez.wezterm"
-run = 'layout floating'
 
 [[on-window-detected]]
 if.app-name-regex-substring = 'finder'
