@@ -1,12 +1,23 @@
 {
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/dotfiles/claude/hooks/block-git-push.sh"
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "matcher": "",
         "hooks": [
           {
             "type": "command",
-            "command": "session=$(tmux display-message -p '#S' 2>/dev/null); config=$(grep \"^$session:\" ~/dotfiles/tmux/session-colors 2>/dev/null); if [ -n \"$config\" ]; then sound=$(echo \"$config\" | cut -d: -f3); emoji=$(echo \"$config\" | cut -d: -f4); else sound=Glass; emoji=; fi; terminal-notifier -title \"$emoji $session (cc)\" -message \"Task complete\" -sound \"$sound\" -activate com.mitchellh.ghostty -execute \"/opt/homebrew/bin/tmux switch-client -t $session\""
+            "command": "tmux run-shell '~/dotfiles/claude/hooks/notify.sh \"Task complete\"'"
           }
         ]
       }
@@ -17,7 +28,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "session=$(tmux display-message -p '#S' 2>/dev/null); config=$(grep \"^$session:\" ~/dotfiles/tmux/session-colors 2>/dev/null); if [ -n \"$config\" ]; then sound=$(echo \"$config\" | cut -d: -f3); emoji=$(echo \"$config\" | cut -d: -f4); else sound=Glass; emoji=; fi; terminal-notifier -title \"$emoji $session (cc)\" -message \"Waiting for input\" -sound \"$sound\" -activate com.mitchellh.ghostty -execute \"/opt/homebrew/bin/tmux switch-client -t $session\""
+            "command": "tmux run-shell '~/dotfiles/claude/hooks/notify.sh \"Waiting for input\"'"
           }
         ]
       }
@@ -32,23 +43,7 @@
     "figma@claude-plugins-official": true
   },
   "effortLevel": "high",
+  "voiceEnabled": true,
   "ideAutoConnect": true,
-  "allow": [
-    "Bash(*)",
-    "Read(*)",
-    "Edit(*)",
-    "Write(*)",
-    "WebFetch(*)",
-    "WebSearch(*)"
-  ],
-  "ask": [
-    "Bash(git push:*)",
-    "Bash(git push --force:*)"
-  ],
-  "deny": [
-    "Read(.env)",
-    "Read(.env.*)",
-    "Read(**/secrets/**)"
-  ],
-  "voiceEnabled": true
+  "skipDangerousModePermissionPrompt": true
 }
