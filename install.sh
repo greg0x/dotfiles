@@ -81,6 +81,16 @@ for f in zshenv zprofile zshrc; do
 done
 echo "✓ Zsh config linked"
 
+# Symlink aerospace config
+if [ -L ~/.aerospace.toml ]; then
+    rm ~/.aerospace.toml
+elif [ -f ~/.aerospace.toml ]; then
+    echo "Backing up existing aerospace config..."
+    mv ~/.aerospace.toml ~/.aerospace.toml.backup.$(date +%s)
+fi
+ln -sf "$DOTFILES/aerospace/aerospace.toml" ~/.aerospace.toml
+echo "✓ AeroSpace config linked"
+
 # Symlink karabiner config
 mkdir -p ~/.config/karabiner
 if [ -L ~/.config/karabiner/karabiner.json ]; then
