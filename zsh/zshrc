@@ -31,7 +31,7 @@ alias pnr='pnpm exec nx run'
 alias dc="docker-compose"
 
 cc() {
-  CLAUDE_CODE_SSE_PORT=$(cat ~/.claude/ide/*.lock(N) < /dev/null 2>/dev/null | jq -r ".port") claude "$@"
+  CLAUDE_CODE_SSE_PORT=$(cat ~/.claude/ide/*.lock(N) < /dev/null 2>/dev/null | jq -r ".port") claude --dangerously-skip-permissions "$@"
 }
 
 
