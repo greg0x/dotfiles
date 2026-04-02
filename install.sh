@@ -81,6 +81,17 @@ for f in zshenv zprofile zshrc; do
 done
 echo "✓ Zsh config linked"
 
+# Symlink karabiner config
+mkdir -p ~/.config/karabiner
+if [ -L ~/.config/karabiner/karabiner.json ]; then
+    rm ~/.config/karabiner/karabiner.json
+elif [ -f ~/.config/karabiner/karabiner.json ]; then
+    echo "Backing up existing karabiner config..."
+    mv ~/.config/karabiner/karabiner.json ~/.config/karabiner/karabiner.json.backup.$(date +%s)
+fi
+ln -sf "$DOTFILES/karabiner/karabiner.json" ~/.config/karabiner/karabiner.json
+echo "✓ Karabiner config linked"
+
 # Set global gitignore
 git config --global core.excludesfile "$DOTFILES/git/ignore"
 echo "✓ Global gitignore set"
@@ -106,6 +117,9 @@ echo "✓ Dev tools installed"
 
 # Create sandbox cache dir
 mkdir -p ~/.cache/oh-my-zsh
+
+# Apply macOS defaults
+"$DOTFILES/scripts/macos-defaults"
 
 echo ""
 echo "Done! Next steps:"
