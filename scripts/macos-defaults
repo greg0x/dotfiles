@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+# macOS defaults — idempotent, run on fresh machine or anytime
+set -euo pipefail
+
+# ── Appearance ───────────────────────────────────────────────────
+defaults write NSGlobalDomain AppleInterfaceStyle -string Dark
+defaults write NSGlobalDomain AppleAccentColor -int 4
+defaults write NSGlobalDomain AppleHighlightColor -string "0.698039 0.843137 1.000000 Blue"
+
+# ── Dock ─────────────────────────────────────────────────────────
+defaults write com.apple.dock orientation -string right
+defaults write com.apple.dock autohide -bool true
+defaults write com.apple.dock tilesize -int 64
+defaults write com.apple.dock largesize -int 128
+defaults write com.apple.dock magnification -bool true
+defaults write com.apple.dock launchanim -bool false
+defaults write com.apple.dock mineffect -string scale
+defaults write com.apple.dock show-recents -bool false
+defaults write com.apple.dock mru-spaces -bool false
+defaults write com.apple.dock expose-animation-duration -float 0.01
+defaults write com.apple.dock expose-group-apps -bool true
+defaults write com.apple.dock showAppExposeGestureEnabled -bool true
+
+# ── Menu Bar ─────────────────────────────────────────────────────
+defaults write NSGlobalDomain _HIHideMenuBar -bool true
+defaults write com.apple.menuextra.clock Show24Hour -bool true
+defaults write com.apple.menuextra.clock ShowDate -bool true
+defaults write com.apple.menuextra.clock ShowDayOfWeek -bool true
+
+# ── Keyboard & Input ────────────────────────────────────────────
+# Use F1-F12 as standard function keys
+defaults write NSGlobalDomain com.apple.keyboard.fnState -bool true
+# Full keyboard access (tab through all UI controls)
+defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
+# Disable auto-correct, auto-capitalize, inline prediction
+defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
+defaults write NSGlobalDomain NSAutomaticInlinePredictionEnabled -bool false
+defaults write NSGlobalDomain NSAllowContinuousSpellChecking -bool false
+
+# ── Trackpad & Mouse ────────────────────────────────────────────
+defaults write NSGlobalDomain com.apple.trackpad.scaling -float 3
+defaults write NSGlobalDomain com.apple.mouse.scaling -float 3
+defaults write NSGlobalDomain com.apple.trackpad.forceClick -bool false
+defaults write NSGlobalDomain com.apple.swipescrolldirection -bool true
+defaults write NSGlobalDomain AppleEnableSwipeNavigateWithScrolls -bool true
+
+# ── Windows ──────────────────────────────────────────────────────
+# Drag windows from anywhere with ctrl+cmd+click
+defaults write NSGlobalDomain NSWindowShouldDragOnGesture -bool true
+# Always prefer tabs
+defaults write NSGlobalDomain AppleWindowTabbingMode -string always
+# Don't minimize on double-click title bar
+defaults write NSGlobalDomain AppleMiniaturizeOnDoubleClick -bool false
+
+# ── Finder ───────────────────────────────────────────────────────
+# List view by default
+defaults write com.apple.finder FXPreferredViewStyle -string Nlsv
+# Show path bar
+defaults write com.apple.finder ShowPathbar -bool true
+
+# ── Units ────────────────────────────────────────────────────────
+defaults write NSGlobalDomain AppleMeasurementUnits -string Centimeters
+defaults write NSGlobalDomain AppleMetricUnits -bool true
+defaults write NSGlobalDomain AppleTemperatureUnit -string Celsius
+
+# ── Xcode ────────────────────────────────────────────────────────
+# Disable SPM sandboxing (prevents nested sandbox-exec failures
+# when xcodebuild runs inside safehouse)
+defaults write com.apple.dt.Xcode IDEPackageSupportDisableSandbox -bool YES
+defaults write com.apple.dt.Xcode IDEPackageSupportDisableManifestSandbox -bool YES
+
+# ── Apply changes ────────────────────────────────────────────────
+killall Dock 2>/dev/null || true
+killall Finder 2>/dev/null || true
+killall SystemUIServer 2>/dev/null || true
+
+echo "macOS defaults applied."
