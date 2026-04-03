@@ -22,6 +22,20 @@ if [[ -n "$pane_path" && "$pane_path" == */.worktrees/* ]]; then
     fi
 fi
 
+# Save Claude Code session IDs for later restoration
+# CC panes show version numbers (e.g., "2.1.89") as pane_current_command
+cc_count=$(tmux list-panes -s -t "$current" -F '#{pane_current_command}' | grep -cE '^[0-9]+\.[0-9]+\.[0-9]+$' || true)
+if [[ "$cc_count" -gt 0 && -n "$pane_path" ]]; then
+    escaped_path=$(echo "$pane_path" | sed 's|^/|-|; s|/|-|g')
+    cc_project="$HOME/.claude/projects/$escaped_path"
+    if [[ -d "$cc_project" ]]; then
+        mkdir -p "$pane_path/.session"
+        ls -t "$cc_project"/*.jsonl 2>/dev/null | head -"$cc_count" | while read -r f; do
+            basename "$f" .jsonl
+        done > "$pane_path/.session/claude-sessions"
+    fi
+fi
+
 # Switch to last (previously active) session before killing
 tmux switch-client -l 2>/dev/null
 

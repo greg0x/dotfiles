@@ -97,7 +97,7 @@ apply_session_color() {
 create_session() {
     local sb
     if $SANDBOX; then
-        sb="safehouse --workdir='$selected' --env-pass=TMUX --enable=shell-init,keychain,ssh,clipboard,macos-gui,xcode --add-dirs-ro='$HOME/dotfiles:$HOME/.local/share/mise:$HOME/.local/share/claude:$HOME/.local/bin:$HOME/.config:$HOME/.oh-my-zsh:$HOME/dev/devenv/octo.nvim:$HOME/.1password:/opt/homebrew/Cellar/terminal-notifier:/Applications/Brave Browser.app:/Library/Preferences/com.apple.dt.Xcode.plist:$HOME/Library/Preferences/com.apple.dt.Xcode.plist' --add-dirs='$HOME/.claude:$HOME/.claude.json:$HOME/.local/share/nvim:$HOME/.local/state/nvim:$HOME/.cache/nvim:$HOME/.cache/oh-my-zsh:$HOME/.gnupg:$HOME/Library/Caches/org.swift.swiftpm:/private/tmp/tmux-$(id -u)'"
+        sb="safehouse --workdir='$selected' --env-pass=TMUX --enable=shell-init,keychain,ssh,clipboard,macos-gui,xcode --add-dirs-ro='$HOME/dotfiles:$HOME/.local/share/mise:$HOME/.local/share/claude:$HOME/.local/bin:$HOME/.config:$HOME/.oh-my-zsh:$HOME/dev/devenv/octo.nvim:$HOME/.1password:/opt/homebrew/Cellar/terminal-notifier:/Applications/Brave Browser.app:/Library/Preferences/com.apple.dt.Xcode.plist:$HOME/Library/Preferences/com.apple.dt.Xcode.plist' --add-dirs='$HOME/.claude:$HOME/.claude.json:$HOME/.local/share/nvim:$HOME/.local/state/nvim:$HOME/.cache/nvim:$HOME/.cache/oh-my-zsh:$HOME/.gnupg:$HOME/.zsh_history:$HOME/Library/Caches/org.swift.swiftpm:/private/tmp/tmux-$(id -u)'"
     fi
 
     # Create session with first window
@@ -110,15 +110,39 @@ create_session() {
         tmux send-keys -t "$session_name:editor.1" 'nvim' Enter
     fi
 
-    # Window 1: nvim (left) | claude (right)
-    if $SANDBOX; then
-        tmux split-window -t "$session_name:editor" -h -l 50% -c "$selected" "$sb -- zsh -lic 'cc --continue; exec zsh'"
+    # Determine CC resume flags from saved sessions
+    local cc_sessions="$selected/.session/claude-sessions"
+    local cc_ids=()
+    if [[ -f "$cc_sessions" ]]; then
+        while IFS= read -r id; do [[ -n "$id" ]] && cc_ids+=("$id"); done < "$cc_sessions"
+    fi
+    local cc_first="${cc_ids[0]:-}"
+    local cc_flag
+    if [[ -n "$cc_first" ]]; then
+        cc_flag="--resume $cc_first"
     else
-        tmux split-window -t "$session_name:editor" -h -l 50% -c "$selected"
-        tmux send-keys -t "$session_name:editor.2" "cc --continue" Enter
+        cc_flag="--continue"
     fi
 
-    # Window 2: plain shell
+    # Window 1: nvim (left) | claude (right)
+    if $SANDBOX; then
+        tmux split-window -t "$session_name:editor" -h -l 50% -c "$selected" "$sb -- zsh -lic 'cc $cc_flag; exec zsh'"
+    else
+        tmux split-window -t "$session_name:editor" -h -l 50% -c "$selected"
+        tmux send-keys -t "$session_name:editor.2" "cc $cc_flag" Enter
+    fi
+
+    # Restore additional CC instances in new windows
+    for id in "${cc_ids[@]:1}"; do
+        if $SANDBOX; then
+            tmux new-window -t "$session_name" -c "$selected" -n "claude" "$sb -- zsh -lic 'cc --resume $id; exec zsh'"
+        else
+            tmux new-window -t "$session_name" -c "$selected" -n "claude"
+            tmux send-keys -t "$session_name:claude" "cc --resume $id" Enter
+        fi
+    done
+
+    # Shell window (always last)
     if $SANDBOX; then
         tmux new-window -t "$session_name" -c "$selected" -n "shell" "$sb -- zsh -li"
     else
