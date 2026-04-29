@@ -1,0 +1,6 @@
+;; Local overrides for agent-safehouse
+
+;; Shell history — zsh needs fcntl locking to share history safely
+(allow file-read* file-write*
+    (home-literal "/.zsh_history")
+)
