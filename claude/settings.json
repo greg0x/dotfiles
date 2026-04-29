@@ -42,8 +42,8 @@
     "gopls-lsp@claude-plugins-official": true,
     "figma@claude-plugins-official": true
   },
-  "effortLevel": "high",
+  "effortLevel": "xhigh",
+  "skipDangerousModePermissionPrompt": true,
   "voiceEnabled": true,
-  "ideAutoConnect": true,
-  "skipDangerousModePermissionPrompt": true
+  "ideAutoConnect": true
 }

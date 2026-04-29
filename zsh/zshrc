@@ -23,12 +23,7 @@ alias vim="nvim"
 alias vi="nvim"
 alias lg='lazygit'
 alias ta="tmux attach"
-alias p="pnpm"
-alias px='pnpm exec'
-alias pdx='pnpm dlx'
-alias pn='pnpm exec nx'
-alias pnr='pnpm exec nx run'
-alias dc="docker-compose"
+alias co="codex --dangerously-bypass-approvals-and-sandbox"
 
 cc() {
   CLAUDE_CODE_SSE_PORT=$(cat ~/.claude/ide/*.lock(N) < /dev/null 2>/dev/null | jq -r ".port") claude --dangerously-skip-permissions "$@"

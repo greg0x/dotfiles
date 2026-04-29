@@ -2,3 +2,7 @@
 .worktreeinclude
 .notes
 .context
+.session
+
+excalidraw.log
+.vds-trigger.ts

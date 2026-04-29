@@ -11,3 +11,14 @@ export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/go/bin:$PATH"
 export PATH="$HOME/dev/bin:$PATH"
 export PATH="$HOME/bin:$PATH"
+
+# Claude
+export CLAUDE_CODE_NO_FLICKER=1
+export AGENT_BROWSER_ARGS=--no-sandbox
+export AGENT_BROWSER_PROFILE=~/.agent-browser/profiles/test
+
+# Android
+export ANDROID_HOME="$HOME/Library/Android/sdk"
+export ANDROID_SDK_ROOT="$ANDROID_HOME"
+export ANDROID_NDK_HOME="$ANDROID_HOME/ndk/27.0.12077973"
+export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
