@@ -154,6 +154,8 @@ autocmd({ "FocusLost", "BufLeave" }, {
     if vim.api.nvim_buf_is_valid(buf)
       and vim.bo[buf].modified
       and vim.bo[buf].buftype == ""
+      and vim.bo[buf].modifiable
+      and not vim.bo[buf].readonly
       and vim.api.nvim_buf_get_name(buf) ~= ""
     then
       vim.api.nvim_buf_call(buf, function()
