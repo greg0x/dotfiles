@@ -1,0 +1,466 @@
+#!/usr/bin/env bash
+
+SESSION_STATE_DIR=".session"
+SESSION_STATE_FILE="tmux-session.json"
+
+session_state_file_for_root() {
+    local root_path="$1"
+    printf '%s/%s/%s\n' "$root_path" "$SESSION_STATE_DIR" "$SESSION_STATE_FILE"
+}
+
+session_state_build_sandbox_wrapper() {
+    local root_path="$1"
+
+    printf "%s" "safehouse --workdir='$root_path' --env-pass=TMUX --enable=shell-init,keychain,ssh,clipboard,macos-gui,xcode,agent-browser --append-profile='$HOME/dotfiles/safehouse/local-overrides.sb' --add-dirs-ro='$HOME/dotfiles:$HOME/.local/share/mise:$HOME/.local/share/claude:$HOME/.local/bin:$HOME/.config:$HOME/.oh-my-zsh:$HOME/dev/devenv/octo.nvim:$HOME/.1password:/opt/homebrew/Cellar/terminal-notifier:/Applications/Brave Browser.app:/Library/Preferences/com.apple.dt.Xcode.plist:$HOME/Library/Preferences/com.apple.dt.Xcode.plist:$HOME/dev/mcp_excalidraw:$HOME/Library/Android/sdk' --add-dirs='$HOME/.claude:$HOME/.claude.json:$HOME/.codex:$HOME/.local/share/nvim:$HOME/.local/state/nvim:$HOME/.cache/nvim:$HOME/.cache/oh-my-zsh:$HOME/.gnupg:$HOME/.cache/chrome-devtools-mcp:$HOME/Library/Caches/org.swift.swiftpm:/private/tmp/tmux-$(id -u):$HOME/.gradle:$HOME/.android:$HOME/Library/Caches/TemporaryItems'"
+}
+
+session_state_saved_sandbox() {
+    local root_path="$1"
+    local state_file
+
+    state_file=$(session_state_file_for_root "$root_path")
+    if [[ ! -f "$state_file" ]]; then
+        return 1
+    fi
+
+    jq -r '.sandbox // empty' "$state_file" 2>/dev/null
+}
+
+session_state_session_root_path() {
+    local session_name="$1"
+
+    tmux list-panes -a -F "#{session_name}"$'\t'"#{window_index}"$'\t'"#{pane_index}"$'\t'"#{pane_current_path}" 2>/dev/null \
+        | awk -F '\t' -v session="$session_name" '$1 == session { print $2 "\t" $3 "\t" $4 }' \
+        | sort -t $'\t' -k1,1n -k2,2n \
+        | awk -F '\t' 'NR == 1 { print $3 }'
+}
+
+session_state_kind_for_command() {
+    local command_name="$1"
+
+    case "$command_name" in
+        nvim|vim|vi)
+            printf '%s\n' "nvim"
+            ;;
+        codex|codex-aarch64-a*)
+            printf '%s\n' "codex"
+            ;;
+        zsh|bash|sh|fish)
+            printf '%s\n' "shell"
+            ;;
+        *)
+            if [[ "$command_name" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+                printf '%s\n' "claude"
+            else
+                printf '%s\n' "shell"
+            fi
+            ;;
+    esac
+}
+
+session_state_cache_key() {
+    local kind="$1"
+    local path="$2"
+
+    printf '%s__%s\n' "$kind" "$path" | sed 's|[^A-Za-z0-9._-]|_|g'
+}
+
+session_state_load_claude_ids() {
+    local project_path="$1"
+    local limit="$2"
+    local escaped_path
+    local project_dir
+
+    escaped_path=$(printf '%s' "$project_path" | sed 's|^/|-|; s|/|-|g')
+    project_dir="$HOME/.claude/projects/$escaped_path"
+
+    if [[ ! -d "$project_dir" ]]; then
+        return 0
+    fi
+
+    ls -t "$project_dir"/*.jsonl 2>/dev/null \
+        | while IFS= read -r file_path; do
+            basename "$file_path" .jsonl
+        done \
+        | sed -n "1,${limit}p"
+}
+
+session_state_load_codex_ids() {
+    local project_path="$1"
+    local limit="$2"
+    local file_path
+    local first_line
+    local session_id
+    local count=0
+
+    while IFS= read -r file_path; do
+        first_line=$(sed -n '1p' "$file_path")
+        session_id=$(printf '%s\n' "$first_line" | jq -r --arg cwd "$project_path" '
+            select(.type == "session_meta" and .payload.cwd == $cwd)
+            | .payload.id // empty
+        ' 2>/dev/null)
+
+        if [[ -n "$session_id" ]]; then
+            printf '%s\n' "$session_id"
+            count=$((count + 1))
+            if [[ "$count" -ge "$limit" ]]; then
+                break
+            fi
+        fi
+    done < <(find "$HOME/.codex/sessions" -type f -name '*.jsonl' 2>/dev/null | sort -r | sed -n '1,500p')
+}
+
+session_state_resume_cache_file() {
+    local cache_dir="$1"
+    local kind="$2"
+    local project_path="$3"
+    local cache_key
+    local cache_file
+
+    cache_key=$(session_state_cache_key "$kind" "$project_path")
+    cache_file="$cache_dir/$cache_key"
+
+    if [[ ! -f "$cache_file" ]]; then
+        case "$kind" in
+            claude)
+                session_state_load_claude_ids "$project_path" 20 > "$cache_file"
+                ;;
+            codex)
+                session_state_load_codex_ids "$project_path" 20 > "$cache_file"
+                ;;
+            *)
+                : > "$cache_file"
+                ;;
+        esac
+    fi
+
+    printf '%s\n' "$cache_file"
+}
+
+session_state_pop_resume_id() {
+    local cache_dir="$1"
+    local kind="$2"
+    local project_path="$3"
+    local cache_file
+    local session_id
+
+    cache_file=$(session_state_resume_cache_file "$cache_dir" "$kind" "$project_path")
+    session_id=$(sed -n '1p' "$cache_file")
+
+    if [[ -n "$session_id" ]]; then
+        tail -n +2 "$cache_file" > "$cache_file.tmp" 2>/dev/null || : > "$cache_file.tmp"
+        mv "$cache_file.tmp" "$cache_file"
+    fi
+
+    printf '%s\n' "$session_id"
+}
+
+session_state_inner_command() {
+    local kind="$1"
+    local resume_id="${2:-}"
+
+    case "$kind" in
+        nvim)
+            printf '%s\n' "nvim"
+            ;;
+        claude)
+            if [[ -n "$resume_id" ]]; then
+                printf 'cc --resume %s\n' "$resume_id"
+            else
+                printf '%s\n' "cc --continue"
+            fi
+            ;;
+        codex)
+            if [[ -n "$resume_id" ]]; then
+                printf 'co resume %s\n' "$resume_id"
+            else
+                printf '%s\n' "co resume --last"
+            fi
+            ;;
+        *)
+            printf '%s\n' ""
+            ;;
+    esac
+}
+
+session_state_tmux_pane_command() {
+    local root_path="$1"
+    local sandbox="$2"
+    local kind="$3"
+    local resume_id="${4:-}"
+    local inner_command
+    local sandbox_wrapper
+
+    inner_command=$(session_state_inner_command "$kind" "$resume_id")
+    if [[ "$sandbox" == "true" ]]; then
+        sandbox_wrapper=$(session_state_build_sandbox_wrapper "$root_path")
+        if [[ -n "$inner_command" ]]; then
+            printf "%s -- zsh -lic '%s; exec zsh'\n" "$sandbox_wrapper" "$inner_command"
+        else
+            printf "%s -- zsh -li\n" "$sandbox_wrapper"
+        fi
+    else
+        if [[ -n "$inner_command" ]]; then
+            printf "zsh -lic '%s; exec zsh'\n" "$inner_command"
+        else
+            printf '%s\n' "zsh -li"
+        fi
+    fi
+}
+
+session_state_write_compat_files() {
+    local root_path="$1"
+    local state_file="$2"
+    local session_dir
+
+    session_dir="$root_path/$SESSION_STATE_DIR"
+    mkdir -p "$session_dir"
+
+    jq -r '.windows[].panes[] | select(.kind == "claude" and .resume_id) | .resume_id' "$state_file" \
+        > "$session_dir/claude-sessions"
+    jq -r '.windows[].panes[] | select(.kind == "codex" and .resume_id) | .resume_id' "$state_file" \
+        > "$session_dir/codex-sessions"
+}
+
+save_tmux_session_state() {
+    local session_name="$1"
+    local root_path
+    local state_file
+    local session_dir
+    local sandbox=false
+    local tmp_dir
+    local pane_rows
+    local window_objects
+    local cache_dir
+    local pane_objects
+    local window_index
+    local window_name
+    local window_active
+    local window_layout
+    local active_json
+    local windows_json
+    local window_json
+    local pane_json
+    local pane_index
+    local pane_active
+    local pane_path
+    local pane_command
+    local pane_title
+    local pane_kind
+    local resume_id
+    local pane_active_json
+
+    root_path=$(session_state_session_root_path "$session_name")
+    if [[ -z "$root_path" ]]; then
+        return 1
+    fi
+
+    state_file=$(session_state_file_for_root "$root_path")
+    session_dir="$root_path/$SESSION_STATE_DIR"
+    mkdir -p "$session_dir"
+
+    tmp_dir=$(mktemp -d)
+    trap "rm -rf '$tmp_dir'" RETURN
+
+    pane_rows="$tmp_dir/panes.tsv"
+    window_objects="$tmp_dir/windows.jsonl"
+    cache_dir="$tmp_dir/resume-cache"
+    mkdir -p "$cache_dir"
+
+    tmux list-panes -a -F "#{session_name}"$'\t'"#{window_index}"$'\t'"#{window_name}"$'\t'"#{window_active}"$'\t'"#{window_layout}"$'\t'"#{pane_index}"$'\t'"#{pane_active}"$'\t'"#{pane_current_path}"$'\t'"#{pane_current_command}"$'\t'"#{pane_title}" \
+        | awk -F '\t' -v session="$session_name" '$1 == session { print $2 "\t" $3 "\t" $4 "\t" $5 "\t" $6 "\t" $7 "\t" $8 "\t" $9 "\t" $10 }' \
+        | sort -t $'\t' -k1,1n -k5,5n \
+        > "$pane_rows"
+
+    if [[ "$(tmux show-options -t "$session_name" -v @sandbox 2>/dev/null || true)" == "1" ]]; then
+        sandbox=true
+    fi
+
+    while IFS=$'\t' read -r window_index window_name window_active window_layout; do
+        pane_objects="$tmp_dir/panes-${window_index}.jsonl"
+        : > "$pane_objects"
+
+        while IFS=$'\t' read -r _ _ _ _ pane_index pane_active pane_path pane_command pane_title; do
+            pane_kind=$(session_state_kind_for_command "$pane_command")
+            resume_id=""
+            case "$pane_kind" in
+                claude|codex)
+                    resume_id=$(session_state_pop_resume_id "$cache_dir" "$pane_kind" "$pane_path")
+                    ;;
+            esac
+
+            if [[ "$pane_active" == "1" ]]; then
+                pane_active_json=true
+            else
+                pane_active_json=false
+            fi
+
+            jq -nc \
+                --argjson index "$pane_index" \
+                --argjson active "$pane_active_json" \
+                --arg path "$pane_path" \
+                --arg kind "$pane_kind" \
+                --arg current_command "$pane_command" \
+                --arg title "$pane_title" \
+                --arg resume_id "$resume_id" '
+                {
+                    index: $index,
+                    active: $active,
+                    path: $path,
+                    kind: $kind,
+                    current_command: $current_command
+                }
+                + (if ($title | length) > 0 then {title: $title} else {} end)
+                + (if ($resume_id | length) > 0 then {resume_id: $resume_id} else {} end)
+            ' >> "$pane_objects"
+        done < <(awk -F '\t' -v window="$window_index" '$1 == window { print }' "$pane_rows")
+
+        if [[ "$window_active" == "1" ]]; then
+            active_json=true
+        else
+            active_json=false
+        fi
+
+        pane_json=$(jq -s '.' "$pane_objects")
+        jq -nc \
+            --argjson index "$window_index" \
+            --arg name "$window_name" \
+            --arg layout "$window_layout" \
+            --argjson active "$active_json" \
+            --argjson panes "$pane_json" '
+            {
+                index: $index,
+                name: $name,
+                layout: $layout,
+                active: $active,
+                panes: $panes
+            }
+        ' >> "$window_objects"
+    done < <(awk -F '\t' '!seen[$1]++ { print $1 "\t" $2 "\t" $3 "\t" $4 }' "$pane_rows")
+
+    windows_json=$(jq -s '.' "$window_objects")
+    jq -nc \
+        --arg version "1" \
+        --arg saved_at "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
+        --arg root_path "$root_path" \
+        --argjson sandbox "$sandbox" \
+        --argjson windows "$windows_json" '
+        {
+            version: ($version | tonumber),
+            saved_at: $saved_at,
+            root_path: $root_path,
+            sandbox: $sandbox,
+            windows: $windows
+        }
+    ' > "$state_file"
+
+    session_state_write_compat_files "$root_path" "$state_file"
+}
+
+restore_tmux_session_state() {
+    local session_name="$1"
+    local root_path="$2"
+    local sandbox="$3"
+    local state_file
+    local created_session=false
+    local window_json
+    local window_name
+    local window_id
+    local window_layout
+    local first_pane_path
+    local first_pane_kind
+    local first_pane_resume_id
+    local first_pane_command
+    local active_pane_index
+    local pane_json
+    local pane_path
+    local pane_kind
+    local pane_resume_id
+    local pane_command
+    local active_window_index
+
+    state_file=$(session_state_file_for_root "$root_path")
+    if [[ ! -f "$state_file" ]]; then
+        return 1
+    fi
+
+    if ! jq -e '.version == 1 and (.windows | length > 0)' "$state_file" >/dev/null 2>&1; then
+        return 1
+    fi
+
+    while IFS= read -r window_json; do
+        window_name=$(printf '%s\n' "$window_json" | jq -r '.name')
+        window_layout=$(printf '%s\n' "$window_json" | jq -r '.layout')
+        first_pane_path=$(printf '%s\n' "$window_json" | jq -r '.panes[0].path')
+        first_pane_kind=$(printf '%s\n' "$window_json" | jq -r '.panes[0].kind')
+        first_pane_resume_id=$(printf '%s\n' "$window_json" | jq -r '.panes[0].resume_id // empty')
+        first_pane_command=$(session_state_tmux_pane_command "$root_path" "$sandbox" "$first_pane_kind" "$first_pane_resume_id")
+
+        if [[ "$created_session" == "false" ]]; then
+            window_id=$(tmux new-session -dP -F '#{window_id}' -s "$session_name" -c "$first_pane_path" -n "$window_name" "$first_pane_command")
+            if [[ "$sandbox" == "true" ]]; then
+                tmux set-option -t "$session_name" default-command "$(session_state_build_sandbox_wrapper "$root_path") -- zsh -li"
+                tmux set-option -t "$session_name" @sandbox 1
+            fi
+            created_session=true
+        else
+            window_id=$(tmux new-window -dP -F '#{window_id}' -t "$session_name" -c "$first_pane_path" -n "$window_name" "$first_pane_command")
+        fi
+
+        while IFS= read -r pane_json; do
+            pane_path=$(printf '%s\n' "$pane_json" | jq -r '.path')
+            pane_kind=$(printf '%s\n' "$pane_json" | jq -r '.kind')
+            pane_resume_id=$(printf '%s\n' "$pane_json" | jq -r '.resume_id // empty')
+            pane_command=$(session_state_tmux_pane_command "$root_path" "$sandbox" "$pane_kind" "$pane_resume_id")
+            tmux split-window -d -t "$window_id" -c "$pane_path" "$pane_command" >/dev/null
+        done < <(printf '%s\n' "$window_json" | jq -c '.panes[1:][]')
+
+        tmux select-layout -t "$window_id" "$window_layout" >/dev/null 2>&1 || true
+        active_pane_index=$(printf '%s\n' "$window_json" | jq -r '.panes[] | select(.active) | .index' | head -1)
+        if [[ -n "$active_pane_index" ]]; then
+            tmux select-pane -t "${window_id}.${active_pane_index}" >/dev/null 2>&1 || true
+        fi
+    done < <(jq -c '.windows[]' "$state_file")
+
+    active_window_index=$(jq -r '.windows[] | select(.active) | .index' "$state_file" | head -1)
+    if [[ -n "$active_window_index" ]]; then
+        tmux select-window -t "$session_name:$active_window_index" >/dev/null 2>&1 || true
+    fi
+}
+
+session_state_usage() {
+    cat <<'EOF'
+Usage:
+  session-state save <tmux-session-name>
+  session-state restore <tmux-session-name> <root-path> <true|false>
+  session-state sandbox <root-path>
+EOF
+}
+
+session_state_main() {
+    local command="${1:-}"
+
+    case "$command" in
+        save)
+            [[ $# -eq 2 ]] || { session_state_usage; exit 1; }
+            save_tmux_session_state "$2"
+            ;;
+        restore)
+            [[ $# -eq 4 ]] || { session_state_usage; exit 1; }
+            restore_tmux_session_state "$2" "$3" "$4"
+            ;;
+        sandbox)
+            [[ $# -eq 2 ]] || { session_state_usage; exit 1; }
+            session_state_saved_sandbox "$2"
+            ;;
+        *)
+            session_state_usage
+            exit 1
+            ;;
+    esac
+}
+
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+    set -euo pipefail
+    session_state_main "$@"
+fi

@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
 
+source "$HOME/dotfiles/scripts/session-state"
+
 CONFIG="$HOME/dotfiles/tmux/session-colors"
 HISTORY="$HOME/.cache/sessionizer-history"
 SANDBOX=true
+SANDBOX_EXPLICIT=false
 
 # Parse flags
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --no-sandbox) SANDBOX=false; shift ;;
+        --no-sandbox) SANDBOX=false; SANDBOX_EXPLICIT=true; shift ;;
         *) break ;;
     esac
 done
@@ -47,7 +50,10 @@ fi
 [[ -z $selected ]] && exit 0
 
 # alt-enter toggles sandbox off
-[[ "$key" == "alt-enter" ]] && SANDBOX=false
+if [[ "$key" == "alt-enter" ]]; then
+    SANDBOX=false
+    SANDBOX_EXPLICIT=true
+fi
 
 # Update history: add selection to top, keep last 20
 {
@@ -67,6 +73,17 @@ else
     max_prefix=$(tmux list-sessions -F '#S' 2>/dev/null | grep -oE '^[0-9]+' | sort -n | tail -1)
     next_prefix=$(printf "%02d" $(( ${max_prefix:--1} + 1 )))
     session_name="${next_prefix}_${base_name}"
+fi
+
+# Respect the saved sandbox mode for restored sessions unless explicitly
+# overridden by a flag or alt-enter.
+if ! $SANDBOX_EXPLICIT; then
+    saved_sandbox=$(session_state_saved_sandbox "$selected" 2>/dev/null || true)
+    if [[ "$saved_sandbox" == "true" ]]; then
+        SANDBOX=true
+    elif [[ "$saved_sandbox" == "false" ]]; then
+        SANDBOX=false
+    fi
 fi
 
 # Apply saved color for session
@@ -93,11 +110,11 @@ apply_session_color() {
     fi
 }
 
-# Function to create session with layout
-create_session() {
+# Function to create the default session layout
+create_default_session() {
     local sb
     if $SANDBOX; then
-        sb="safehouse --workdir='$selected' --env-pass=TMUX --enable=shell-init,keychain,ssh,clipboard,macos-gui,xcode,agent-browser --append-profile='$HOME/dotfiles/safehouse/local-overrides.sb' --add-dirs-ro='$HOME/dotfiles:$HOME/.local/share/mise:$HOME/.local/share/claude:$HOME/.local/bin:$HOME/.config:$HOME/.oh-my-zsh:$HOME/dev/devenv/octo.nvim:$HOME/.1password:/opt/homebrew/Cellar/terminal-notifier:/Applications/Brave Browser.app:/Library/Preferences/com.apple.dt.Xcode.plist:$HOME/Library/Preferences/com.apple.dt.Xcode.plist:$HOME/dev/mcp_excalidraw:$HOME/Library/Android/sdk' --add-dirs='$HOME/.claude:$HOME/.claude.json:$HOME/.codex:$HOME/.local/share/nvim:$HOME/.local/state/nvim:$HOME/.cache/nvim:$HOME/.cache/oh-my-zsh:$HOME/.gnupg:$HOME/.cache/chrome-devtools-mcp:$HOME/Library/Caches/org.swift.swiftpm:/private/tmp/tmux-$(id -u):$HOME/.gradle:$HOME/.android:$HOME/Library/Caches/TemporaryItems'"
+        sb=$(session_state_build_sandbox_wrapper "$selected")
     fi
 
     # Create session with first window
@@ -153,6 +170,22 @@ create_session() {
     # Focus back on nvim
     tmux select-window -t "$session_name:editor"
     tmux select-pane -t "$session_name:editor.1"
+}
+
+create_session() {
+    local sandbox_value
+
+    if $SANDBOX; then
+        sandbox_value=true
+    else
+        sandbox_value=false
+    fi
+
+    if restore_tmux_session_state "$session_name" "$selected" "$sandbox_value"; then
+        return 0
+    fi
+
+    create_default_session
 }
 
 # Not in tmux - create and attach
