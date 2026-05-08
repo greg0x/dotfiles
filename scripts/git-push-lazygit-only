@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# `git` shim that only permits `git push` when invoked from lazygit.
+# Every other git invocation is forwarded to the real git unchanged.
+#
+# Detection: walk up the parent-process chain. lazygit is the parent
+# (or grandparent, when it shells out via `sh -c`) of the git process
+# it spawns. No env var has to be set anywhere — the process tree is
+# the source of truth.
+
+set -e
+
+REAL_GIT=/usr/bin/git
+
+invoked_by_lazygit() {
+  local pid=$PPID
+  local hops=0
+  local max_hops=8
+  while (( hops < max_hops )) && (( pid > 1 )); do
+    local comm
+    comm=$(ps -o comm= -p "$pid" 2>/dev/null) || return 1
+    # Trim whitespace
+    comm="${comm#"${comm%%[![:space:]]*}"}"
+    comm="${comm%"${comm##*[![:space:]]}"}"
+    if [[ "$comm" =~ (^|/)lazygit$ ]]; then
+      return 0
+    fi
+    pid=$(ps -o ppid= -p "$pid" 2>/dev/null | tr -d ' ')
+    [[ -z "$pid" ]] && return 1
+    hops=$((hops + 1))
+  done
+  return 1
+}
+
+# Locate the subcommand by skipping git's global options.
+i=1
+subcommand=""
+while (( i <= $# )); do
+  arg="${!i}"
+  case "$arg" in
+    -c|-C|--git-dir|--work-tree|--namespace|--super-prefix|--config-env|--exec-path|--list-cmds)
+      i=$((i + 2))
+      ;;
+    -*)
+      i=$((i + 1))
+      ;;
+    *)
+      subcommand="$arg"
+      break
+      ;;
+  esac
+done
+
+if [[ "$subcommand" == "push" ]] && ! invoked_by_lazygit; then
+  echo "BLOCKED: git push is only allowed from lazygit." >&2
+  exit 1
+fi
+
+exec "$REAL_GIT" "$@"
