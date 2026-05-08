@@ -75,29 +75,46 @@ return {
 			"nvim-lua/plenary.nvim",
 			"nvim-tree/nvim-web-devicons",
 		},
-		keys = {
-			{ "<leader>go", "<cmd>Octo<cr>", desc = "Octo" },
+		keys = (function()
+			-- Run an Octo command against a named remote (e.g. "upstream") in fork-based workflows.
+			local function octo_on(remote, sub)
+				return function()
+					local repo = require("octo.utils").get_remote_name({ remote })
+					if not repo then
+						vim.notify("No '" .. remote .. "' remote", vim.log.levels.WARN)
+						return
+					end
+					vim.cmd("Octo " .. sub .. " repo=" .. repo)
+				end
+			end
 
-			-- Issues
-			{ "<leader>gil", "<cmd>Octo issue list<cr>", desc = "List issues" },
-			{ "<leader>gic", "<cmd>Octo issue create<cr>", desc = "Create issue" },
-			{ "<leader>gis", "<cmd>Octo issue search<cr>", desc = "Search issues" },
-			{ "<leader>gim", "<cmd>Octo issue list mentioned=greg0x<cr>", desc = "Issues mentioning me" },
+			return {
+				{ "<leader>go", "<cmd>Octo<cr>", desc = "Octo" },
 
-			-- Pull requests
-			{ "<leader>gpl", "<cmd>Octo pr list<cr>", desc = "List PRs" },
-			{ "<leader>gpc", "<cmd>Octo pr create<cr>", desc = "Create PR" },
-			{ "<leader>gps", "<cmd>Octo pr search<cr>", desc = "Search PRs" },
+				-- Issues
+				{ "<leader>gil", "<cmd>Octo issue list<cr>", desc = "List issues" },
+				{ "<leader>giL", octo_on("upstream", "issue list"), desc = "List issues (upstream)" },
+				{ "<leader>gic", "<cmd>Octo issue create<cr>", desc = "Create issue" },
+				{ "<leader>gis", "<cmd>Octo issue search<cr>", desc = "Search issues" },
+				{ "<leader>gim", "<cmd>Octo issue list mentioned=greg0x<cr>", desc = "Issues mentioning me" },
 
-			-- Milestones
-			{ "<leader>gml", "<cmd>Octo milestone list<cr>", desc = "List milestones" },
+				-- Pull requests
+				{ "<leader>gpl", "<cmd>Octo pr list<cr>", desc = "List PRs" },
+				{ "<leader>gpL", octo_on("upstream", "pr list"), desc = "List PRs (upstream)" },
+				{ "<leader>gpc", "<cmd>Octo pr create<cr>", desc = "Create PR" },
+				{ "<leader>gps", "<cmd>Octo pr search<cr>", desc = "Search PRs" },
+				{ "<leader>gpS", octo_on("upstream", "pr search"), desc = "Search PRs (upstream)" },
 
-			-- Notifications
-			{ "<leader>gn", "<cmd>Octo notification list<cr>", desc = "Notifications" },
+				-- Milestones
+				{ "<leader>gml", "<cmd>Octo milestone list<cr>", desc = "List milestones" },
 
-			-- Buffer-local (Octo buffers only)
-			{ "<localleader>cy", "<cmd>Octo comment url<cr>", desc = "Copy comment URL", ft = "octo" },
-		},
+				-- Notifications
+				{ "<leader>gn", "<cmd>Octo notification list<cr>", desc = "Notifications" },
+
+				-- Buffer-local (Octo buffers only)
+				{ "<localleader>cy", "<cmd>Octo comment url<cr>", desc = "Copy comment URL", ft = "octo" },
+			}
+		end)(),
 		opts = {
 			enable_builtin = true,
 			default_to_projects_v2 = true,
